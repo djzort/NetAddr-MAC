@@ -1,0 +1,22 @@
+NetAddr:MAC
+-----------
+
+This is a module with functions for handling mac addresses. There are
+already two or three MAC addressing functions in CPAN, the motivation
+for this module is moderate functionality without Moose.
+
+With that in mind you can understand why i have cloned much of the really 
+usefull functionality from the two or three existing similar modules on CPAN.
+
+Ive covered off all the mac address formats i deal with in my workplace of mixed
+hardware. This module can decode just about anything that looks reasonably like a
+mac address, and stringify into every format i have seen used...
+
+So sorry, Im not really interesting in adding a templating function to define your
+own mac address formats. Youre welcome to either send in a patch, extend this module
+or quickly write a function that wraps the 'raw' output to whatever you want. Match
+and join are your friends :)
+
+Hopefully this module is usefull to you.
+
+-Dean

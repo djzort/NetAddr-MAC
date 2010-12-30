@@ -1,0 +1,22 @@
+---
+name: NetAddr-MAC
+version: 0.7
+author:
+  - 'Dean Hamstead <dean@fragfest.com.au>'
+abstract: "Handles hardware MAC Addresses (EUI-48 and EUI-64)"
+license: perl
+requires:
+  Carp: 0
+  List::Util: 0
+configure_requires:
+  Module::Build: 0.340201
+generated_by: Module::Build version 0.340201
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+provides:
+  NetAddr::MAC:
+    file: lib/NetAddr/MAC.pm
+    version: 0.7
+resources:
+  license: http://dev.perl.org/licenses/
