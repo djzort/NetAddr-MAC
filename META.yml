@@ -1,6 +1,6 @@
 ---
 name: NetAddr-MAC
-version: v0.7.1
+version: 0.71
 author:
   - 'Dean Hamstead <dean@fragfest.com.au>'
 abstract: Handles hardware MAC Addresses (EUI-48 and EUI-64)
@@ -17,7 +17,7 @@ configure_requires:
 provides:
   NetAddr::MAC:
     file: lib/NetAddr/MAC.pm
-    version: v0.7.1
+    version: 0.71
 generated_by: Module::Build version 0.340201
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
