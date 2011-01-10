@@ -1,2 +1,3 @@
 - actually have the token ring function do something
 - perhaps provide some overloaded functions?
+- test the normalisation functions

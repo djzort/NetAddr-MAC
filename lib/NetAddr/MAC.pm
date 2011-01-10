@@ -14,7 +14,7 @@ use constant EUI64LENGTHDEC => 8;
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.7 $)[1];
+$VERSION = (qw$Revision: 0.7.1 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -641,7 +641,7 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 
 =head1 AUTHOR
 
-Dean Hamstead C<< <dean.hamstead@fragfest.com.au> >>
+Dean Hamstead C<< <dean.hamstead@optusnet.com.au> >>
 
 =cut
 

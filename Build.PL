@@ -12,5 +12,8 @@ my $build = Module::Build->new(
         Carp       => 0,
         'List::Util' => 0,
     },
+    build_requires => {
+        'Test::Trap' => 0,
+    },
 );
 $build->create_build_script();
