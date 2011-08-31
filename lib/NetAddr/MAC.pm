@@ -371,6 +371,25 @@ sub as_sun {
     return join( q{-}, map { sprintf( '%01x', $_ ) } @{ $self->{mac} } );
 }
 
+=head2 as_ipv6_suffix
+
+returns the EUI-64 address in the format used for IPv6 an autoconf address suffix
+
+=cut
+
+sub as_ipv6_suffix {
+    my $self = shift;
+    if ($self->is_eui64) {
+        my @suffix = (
+            @{ $self->{mac} }[0] ^ 0x02,
+            @{ $self->{mac} }[1..7]
+        );
+        return join( q{:}, map { $_ *= 2; sprintf( '%02x%02x', $suffix[$_], $suffix[$_ + 1]) } 0 .. 3 );
+    } else {
+        croak 'please convert to eui-64 first';
+    }
+}
+
 =head2 as_tokenring
 
 returns the mac address normalized as a hexidecimal string that is 0 padded and with B<-> delimiting every octet
@@ -385,6 +404,34 @@ sub as_tokenring {
 
     # my $self = shift;
     # return join( q{-}, map { sprintf( '%01x', $_ ) } @{ $self->{mac} } );
+}
+
+=head2 convert
+
+converts between EUI-48 and EUI-64 addresses
+
+=cut
+
+sub convert {
+    my $self = shift;
+    if ($self->is_eui48) {
+        # convert to eui-64
+        $self->{mac} = [
+            @{ $self->{mac} }[0..2],
+            0xff, 0xfe,
+            @{ $self->{mac} }[3..5]
+        ];
+    } else {
+        if (@{ $self->{mac} }[3] == 0xff and (@{ $self->{mac} }[4] == 0xff or @{ $self->{mac} }[4] == 0xfe)) {
+            # convert to eui-48
+            $self->{mac} = [
+                @{ $self->{mac} }[0..2,5..7]
+            ];
+        } else {
+            croak 'eui-64 address is not derived from an eui-48 address';
+        }
+    }
+    return 1;
 }
 
 =head1 STAND ALONE PROPERTY FUNCTIONS
