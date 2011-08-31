@@ -373,7 +373,7 @@ sub as_sun {
 
 =head2 as_ipv6_suffix
 
-returns the EUI-64 address in the format used for IPv6 an autoconf address suffix
+returns the EUI-64 address in the format used for an IPv6 autoconf address suffix
 
 =cut
 
