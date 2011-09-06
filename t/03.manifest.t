@@ -9,4 +9,4 @@ if ( not $ENV{TEST_AUTHOR} ) {
 
 eval "use Test::CheckManifest 0.9";
 plan skip_all => "Test::CheckManifest 0.9 required" if $@;
-ok_manifest({filter => [qr/\.svn|\.old$/]});
+ok_manifest({filter => [qr/\.svn|\.old$|\.git/]});
