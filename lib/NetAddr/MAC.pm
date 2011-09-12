@@ -14,7 +14,7 @@ use constant EUI64LENGTHDEC => 8;
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.71 $)[1];
+$VERSION = (qw$Revision: 0.72 $)[1];
 
 %EXPORT_TAGS = (
     all => [
