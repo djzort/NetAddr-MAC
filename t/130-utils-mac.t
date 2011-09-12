@@ -1,6 +1,5 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Symbol qw( delete_package );
 use Test::More tests => 6;
