@@ -13,3 +13,4 @@ t/131-utils-mac-properties.t
 t/132-utils-mac-normals.t
 t/99-perlcritic.t
 t/.perlcriticrc
+META.json
