@@ -151,6 +151,29 @@ Some devices that use EUI-64 addresses include:
     IPv6
     ZigBee / 802.15.4 wireless personal-area networks
 
+=head1 MOTIVATION
+
+We have lots of systems in my work which handle MAC addresses. There was lots
+of code independantly validating and normalising them. So I set about creating
+a reusable module to add to our SOE install so that MAC address handling becomes
+both powerful and trivial at the same time.
+
+There are several other MAC address modules on CPAN. I didnt like one of them
+and the one I did like dragged Moose in. So I created this module, taking the
+ideas I liked from the other modules and adding in extra things that I needed
+(and a few features just for completeness) whilst avoiding dependancies and
+avoiding anything that doesnt work on perl 5.6
+
+I hope the result is useful to others, the concept is to be able to create
+an object representing a MAC address based on a string that only very vaguely
+resembles a MAC address. From there to be able to output normalised string
+representations in many common formats.
+
+A templating function is deliberately omitted, as very niche outputs can easily
+be derived from the 'basic' format.
+
+Feel free to send patches for features you add.
+
 =head1 OO METHODS
 
 =head2 OIE::Utils::MAC->new( mac => $mac )
