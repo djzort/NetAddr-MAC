@@ -769,8 +769,13 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 
 =head1 TODO
 
- - tests!
- - as_tokenring - need to find a nifty way to reverse the bit order
+ - moare tests!
+
+=head1 SUPPORT
+
+Please use the RT system on CPAN, also many young people like to use Github
+
+  https://github.com/djzort/NetAddr-MAC
 
 =head1 AUTHOR
 
