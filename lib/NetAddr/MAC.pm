@@ -469,10 +469,10 @@ sub as_singledash {
         q{-},
         join( '',
             map { sprintf( '%02x', $_ ) }
-              (@{ $self->{mac} })[ 0 .. ( $len / 2 - 1 ) ] ),
+              @{ $self->{mac} }[ 0 .. ($len / 2 - 1) ] ),
         join( '',
             map { sprintf( '%02x', $_ ) }
-              (@{ $self->{mac} })[ ( $len / 2 ) .. $len ] ),
+              @{ $self->{mac} }[ ($len / 2)  .. ($len - 1) ] ),
     );
 }
 
