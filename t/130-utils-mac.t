@@ -15,7 +15,7 @@ my @all = qw(
           mac_as_microsoft mac_as_cisco
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
-          mac_as_tokenring
+          mac_as_tokenring mac_as_singledash
 
 );
 
@@ -30,7 +30,7 @@ my @normals = qw(
           mac_as_microsoft mac_as_cisco
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
-          mac_as_tokenring
+          mac_as_tokenring mac_as_singledash
 );
 
 can_ok('NetAddr::MAC', @all, @properties, @normals);
