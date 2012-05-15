@@ -1,0 +1,47 @@
+{
+   "abstract" : "Handles hardware MAC Addresses (EUI-48 and EUI-64)",
+   "author" : [
+      "Dean Hamstead <dean@fragfest.com.au>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "NetAddr-MAC",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Test::Trap" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.38"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : "0",
+            "List::Util" : "0"
+         }
+      }
+   },
+   "provides" : {
+      "NetAddr::MAC" : {
+         "file" : "lib/NetAddr/MAC.pm",
+         "version" : "0.73"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ]
+   },
+   "version" : "0.73"
+}

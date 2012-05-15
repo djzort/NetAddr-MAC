@@ -17,27 +17,27 @@ use constant ETHER2TOKEN => (
 ## note this table is rotated compared to the above link,
 ## so that the hex values line up as a linear array :)
 ## 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-qw(00 80 40 c0 20 a0 60 e0 10 90 50 d0 30 b0 70 f0), # 0
-qw(08 88 48 c8 28 a8 68 e8 18 98 58 d8 38 b8 78 f8), # 1
-qw(04 84 44 c4 24 a4 64 e4 14 94 54 d4 34 b4 74 f4), # 2
-qw(0c 8c 4c cc 2c ac 6c ec 1c 9c 5c dc 3c bc 7c fc), # 3
-qw(02 82 42 c2 22 a2 62 e2 12 92 52 d2 32 b2 72 f2), # 4
-qw(0a 8a 4a ca 2a aa 6a ea 1a 9a 5a da 3a ba 7a fa), # 5
-qw(06 86 46 c6 26 a6 66 e6 16 96 56 d6 36 b6 76 f6), # 6
-qw(0e 8e 4e ce 2e ae 6e ee 1e 9e 5e de 3e be 7e fe), # 7
-qw(01 81 41 c1 21 a1 61 e1 11 91 51 d1 31 b1 71 f1), # 8
-qw(09 89 49 c9 29 a9 69 e9 19 99 59 d9 39 b9 79 f9), # 9
-qw(05 85 45 c5 25 a5 65 e5 15 95 55 d5 35 b5 75 f5), # a
-qw(0d 8d 4d cd 2d ad 6d ed 1d 9d 5d dd 3d bd 7d fd), # b
-qw(03 83 43 c3 23 a3 63 e3 13 93 53 d3 33 b3 73 f3), # c
-qw(0b 8b 4b cb 2b ab 6b eb 1b 9b 5b db 3b bb 7b fb), # d
-qw(07 87 47 c7 27 a7 67 e7 17 97 57 d7 37 b7 77 f7), # e
-qw(0f 8f 4f cf 2f af 6f ef 1f 9f 5f df 3f bf 7f ff), # f
+    qw(00 80 40 c0 20 a0 60 e0 10 90 50 d0 30 b0 70 f0),    # 0
+    qw(08 88 48 c8 28 a8 68 e8 18 98 58 d8 38 b8 78 f8),    # 1
+    qw(04 84 44 c4 24 a4 64 e4 14 94 54 d4 34 b4 74 f4),    # 2
+    qw(0c 8c 4c cc 2c ac 6c ec 1c 9c 5c dc 3c bc 7c fc),    # 3
+    qw(02 82 42 c2 22 a2 62 e2 12 92 52 d2 32 b2 72 f2),    # 4
+    qw(0a 8a 4a ca 2a aa 6a ea 1a 9a 5a da 3a ba 7a fa),    # 5
+    qw(06 86 46 c6 26 a6 66 e6 16 96 56 d6 36 b6 76 f6),    # 6
+    qw(0e 8e 4e ce 2e ae 6e ee 1e 9e 5e de 3e be 7e fe),    # 7
+    qw(01 81 41 c1 21 a1 61 e1 11 91 51 d1 31 b1 71 f1),    # 8
+    qw(09 89 49 c9 29 a9 69 e9 19 99 59 d9 39 b9 79 f9),    # 9
+    qw(05 85 45 c5 25 a5 65 e5 15 95 55 d5 35 b5 75 f5),    # a
+    qw(0d 8d 4d cd 2d ad 6d ed 1d 9d 5d dd 3d bd 7d fd),    # b
+    qw(03 83 43 c3 23 a3 63 e3 13 93 53 d3 33 b3 73 f3),    # c
+    qw(0b 8b 4b cb 2b ab 6b eb 1b 9b 5b db 3b bb 7b fb),    # d
+    qw(07 87 47 c7 27 a7 67 e7 17 97 57 d7 37 b7 77 f7),    # e
+    qw(0f 8f 4f cf 2f af 6f ef 1f 9f 5f df 3f bf 7f ff),    # f
 );
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.73 $)[1];
+$VERSION = (qw$Revision: 0.74 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -49,15 +49,15 @@ $VERSION = (qw$Revision: 0.73 $)[1];
           mac_as_microsoft mac_as_cisco
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
-          mac_as_tokenring
-        )
+          mac_as_tokenring mac_as_singledash
+          )
     ],
     properties => [
         qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
           mac_is_local     mac_is_universal
-        )
+          )
     ],
     normals => [
         qw(
@@ -65,8 +65,8 @@ $VERSION = (qw$Revision: 0.73 $)[1];
           mac_as_microsoft mac_as_cisco
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
-          mac_as_tokenring
-        )
+          mac_as_tokenring mac_as_singledash
+          )
     ],
 );
 
@@ -100,6 +100,7 @@ OIE::Utils::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
     print 'IEEE Format: ', $mac->as_ieee,"\n";
     print 'IPv6 Address: ',$mac->as_ipv6_suffix,"\n";
     print 'Microsoft Format: ',$mac->as_microsoft,"\n";
+    print 'Single Dash Format: ',$mac->as_singledash,"\n";
     print 'Sun Format: ',  $mac->as_sun,"\n";
     print 'Token Ring Format: ', $mac->as_tokenring,"\n";
 
@@ -123,6 +124,7 @@ OIE::Utils::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
     print 'IEEE Format: ', mac_as_ieee($mac),"\n";
     print 'IPv6 Address: ',mac_as_ipv6_suffix($mac),"\n";
     print 'Microsoft Format: ',mac_as_microsoft($mac),"\n";
+    print 'Single Dash Format: ', mac_as_singledash($mac),"\n";
     print 'Sun Format: ',  mac_as_sun($mac),"\n";
     print 'Token Ring Format: ',mac_as_tokenring($mac),"\n";
 
@@ -193,7 +195,7 @@ sub new {
     my $self = bless {}, $c;
 
     croak q|Please provide a mac address|
-        unless @a;
+      unless @a;
 
     # massage a single argument into a mac argument if needed
     $self->_init( @a == 1 ? ( mac => shift @a ) : @a );
@@ -217,32 +219,33 @@ sub _mac_to_integers {
 
     my $mac = shift || return;
 
-    $mac =~ s{^1,\d,}{}; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
+    $mac =~ s{^1,\d,}{}
+      ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
 
     my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
     croak "Invalid MAC format '$mac'"
-        if first {m{[^a-f0-9]}i} @parts;
+      if first { m{[^a-f0-9]}i } @parts;
 
     # 12 characters for EUI-48, 16 for EUI-64
-    if ( @parts == 1 &&
-        (   length $parts[0] == EUI48LENGTHHEX
-            || length $parts[0] == EUI64LENGTHHEX ) )
-        {    # 0019e3010e72
-            local $_ = shift(@parts);
-            while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
-            return [ map { hex } @parts ];
+    if (
+        @parts == 1
+        && (   length $parts[0] == EUI48LENGTHHEX
+            || length $parts[0] == EUI64LENGTHHEX )
+      )
+    {    # 0019e3010e72
+        local $_ = shift(@parts);
+        while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
+        return [ map { hex } @parts ];
     }
 
     # 00:19:e3:01:0e:72
-    if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC )
-    {
+    if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
         return [ map { hex } @parts ];
     }
 
     # 0019:e301:0e72
-    if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 )
-    {
+    if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 ) {
         return [
             map { m{^ ([a-f0-9]{2}) ([a-f0-9]{2}) $}ix && ( hex($1), hex($2) ) }
               @parts
@@ -335,7 +338,7 @@ returns true if mac address is determined to be universally administered
 sub is_universal {
     my $self = shift;
 
-    return ! is_local($self);
+    return !is_local($self);
 }
 
 =head1 OO NORMALIZATION METHODS
@@ -364,9 +367,11 @@ B<1,length> leading where I<length> is the number of hex pairs (ie 6 for EUI48)
 
 sub as_bpr {
     my $self = shift;
-    return q{1,} . scalar @{$self->{mac}} . q{,} . join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
+    return
+        q{1,}
+      . scalar @{ $self->{mac} } . q{,}
+      . join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
 }
-
 
 =head2 as_cisco
 
@@ -410,23 +415,28 @@ sub as_ipv6_suffix {
     my @tmpmac;
 
     # be slightly evil here, so that hashrefs and objects work
-    if (is_eui48($self)) {
-       # save this for later
-       @tmpmac = @{ $self->{mac} };
+    if ( is_eui48($self) ) {
 
-       to_eui64($self);
+        # save this for later
+        @tmpmac = @{ $self->{mac} };
+
+        to_eui64($self);
 
     }
 
-    my @suffix = (
-        @{ $self->{mac} }[0] ^ 0x02,
-        @{ $self->{mac} }[1..7]
-    );
+    my @suffix = ( @{ $self->{mac} }[0] ^ 0x02, @{ $self->{mac} }[ 1 .. 7 ] );
 
     # restore the eui48 if needed
     $self->{mac} = \@tmpmac if @tmpmac;
 
-    return join( q{:}, map { my $i = $_; $i *= 2; sprintf( '%02x%02x', $suffix[$i], $suffix[$i + 1]) } 0 .. 3 );
+    return join(
+        q{:},
+        map {
+            my $i = $_;
+            $i *= 2;
+            sprintf( '%02x%02x', $suffix[$i], $suffix[ $i + 1 ] )
+          } 0 .. 3
+    );
 }
 
 =head2 as_microsoft
@@ -441,6 +451,29 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 sub as_microsoft {
     my $self = shift;
     return join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
+}
+
+=head2 as_singledash
+
+returns the mac address normalized as a hexidecimal string that is 0 padded and has a dash in the middle of the hex string.
+
+ 001122-334455
+
+=cut
+
+sub as_singledash {
+    my $self = shift;
+    # there may be a better way to do this
+    my $len  = scalar @{ $self->{mac} };
+    return join(
+        q{-},
+        join( '',
+            map { sprintf( '%02x', $_ ) }
+              @{ $self->{mac} }[ 0 .. ( $len / 2 - 1 ) ] ),
+        join( '',
+            map { sprintf( '%02x', $_ ) }
+              @{ $self->{mac} }[ ( $len / 2 ) .. $len ] ),
+    );
 }
 
 =head2 as_sun
@@ -483,16 +516,21 @@ sub to_eui48 {
     my $self = shift;
 
     # be slightly evil here, so that hashrefs and objects work
-    if (is_eui64($self)) {
-        if (@{ $self->{mac} }[3] == 0xff and (@{ $self->{mac} }[4] == 0xff or @{ $self->{mac} }[4] == 0xfe)) {
+    if ( is_eui64($self) ) {
+        if ( @{ $self->{mac} }[3] == 0xff
+            and ( @{ $self->{mac} }[4] == 0xff or @{ $self->{mac} }[4] == 0xfe )
+          )
+        {
+
             # convert to eui-48
-            $self->{mac} = [ @{ $self->{mac} }[0..2,5..7] ];
-        } else {
+            $self->{mac} = [ @{ $self->{mac} }[ 0 .. 2, 5 .. 7 ] ];
+        }
+        else {
             croak 'eui-64 address is not derived from an eui-48 address';
         }
     }
 
-    return 1
+    return 1;
 }
 
 =head2 to_eui64
@@ -506,16 +544,16 @@ sub to_eui64 {
     my $self = shift;
 
     # be slightly evil here so that hashrefs and objects work
-    if (is_eui48($self)) {
+    if ( is_eui48($self) ) {
+
         # convert to eui-64
         $self->{mac} = [
-            @{ $self->{mac} }[0..2],
-            0xff, 0xfe,
-            @{ $self->{mac} }[3..5]
+            @{ $self->{mac} }[ 0 .. 2 ], 0xff,
+            0xfe,                        @{ $self->{mac} }[ 3 .. 5 ]
         ];
     }
 
-    return 1
+    return 1;
 }
 
 =head1 STAND ALONE PROPERTY FUNCTIONS
@@ -663,7 +701,6 @@ sub mac_as_bpr {
 
 }
 
-
 =head2 mac_as_cisco($mac)
 
 returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and with B<.> delimiting every 2nd octet
@@ -741,6 +778,26 @@ sub mac_as_microsoft {
     croak 'argument must be a string' if ref $mac;
 
     return as_microsoft( { mac => _mac_to_integers($mac) } )
+
+}
+
+=head2 mac_as_singledash($mac)
+
+returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and has a dash in the middle of the hex string.
+
+ 001122-334455
+
+=cut
+
+sub mac_as_singledash {
+
+    my $mac = shift;
+
+    croak 'please use as_singledash'
+      if ref $mac eq __PACKAGE__;
+    croak 'argument must be a string' if ref $mac;
+
+    return as_singledash( { mac => _mac_to_integers($mac) } )
 
 }
 
