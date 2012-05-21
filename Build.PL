@@ -11,6 +11,8 @@ my $build = Module::Build->new(
     requires    => {
         Carp       => 0,
         'List::Util' => 0,
+        'strict' => 0,
+        'warnings' => 0,
     },
     build_requires => {
         'Test::Trap' => 0,
