@@ -862,6 +862,11 @@ Please use the RT system on CPAN, also many young people like to use Github
 
 Dean Hamstead C<< <dean.hamstead@optusnet.com.au> >>
 
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
 =cut
 
 1;
