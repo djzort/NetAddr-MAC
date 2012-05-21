@@ -2,6 +2,7 @@
 
 package NetAddr::MAC;
 use strict;
+use warnings;
 
 use Carp qw(croak);
 
@@ -37,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.74 $)[1];
+$VERSION = (qw$Revision: 0.75 $)[1];
 
 %EXPORT_TAGS = (
     all => [
