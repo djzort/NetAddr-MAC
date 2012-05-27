@@ -27,14 +27,21 @@
       "runtime" : {
          "requires" : {
             "Carp" : "0",
-            "List::Util" : "0"
+            "Exporter" : "0",
+            "List::Util" : "0",
+            "base" : "0",
+            "constant" : "0",
+            "perl" : "5.004",
+            "strict" : "0",
+            "vars" : "0",
+            "warnings" : "0"
          }
       }
    },
    "provides" : {
       "NetAddr::MAC" : {
          "file" : "lib/NetAddr/MAC.pm",
-         "version" : "0.75"
+         "version" : "0.76"
       }
    },
    "release_status" : "stable",
@@ -43,5 +50,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.75"
+   "version" : "0.76"
 }

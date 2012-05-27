@@ -16,10 +16,17 @@ name: NetAddr-MAC
 provides:
   NetAddr::MAC:
     file: lib/NetAddr/MAC.pm
-    version: 0.75
+    version: 0.76
 requires:
   Carp: 0
+  Exporter: 0
   List::Util: 0
+  base: 0
+  constant: 0
+  perl: 5.004
+  strict: 0
+  vars: 0
+  warnings: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.75
+version: 0.76
