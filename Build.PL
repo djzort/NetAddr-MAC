@@ -13,6 +13,11 @@ my $build = Module::Build->new(
         'List::Util' => 0,
         'strict' => 0,
         'warnings' => 0,
+        'constant' => 0,
+        'vars' => 0,
+        'base' => 0,
+        'Exporter' => 0,
+        'perl' => 5.004,
     },
     build_requires => {
         'Test::Trap' => 0,

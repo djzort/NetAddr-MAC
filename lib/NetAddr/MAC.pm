@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/false
 
 package NetAddr::MAC;
 use strict;
@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.75 $)[1];
+$VERSION = (qw$Revision: 0.76 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -75,14 +75,14 @@ Exporter::export_ok_tags( keys %EXPORT_TAGS );
 
 =head1 NAME
 
-OIE::Utils::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
+NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
 
 =head1 SYNOPSIS
 
-    use OIE::Utils::MAC;
+    use NetAddr::MAC;
 
-    my $mac = OIE::Utils::MAC->new( '00:11:22:aa:bb:cc' );
-    my $mac = OIE::Utils::MAC->new( mac => '0011.22AA.BBCC' );
+    my $mac = NetAddr::MAC->new( '00:11:22:aa:bb:cc' );
+    my $mac = NetAddr::MAC->new( mac => '0011.22AA.BBCC' );
 
     print "MAC provided at object creation was: ", $mac->original;
 
@@ -106,7 +106,7 @@ OIE::Utils::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
     print 'Token Ring Format: ', $mac->as_tokenring,"\n";
 
 
-    use OIE::Utils::MAC qw( :all );
+    use NetAddr::MAC qw( :all );
 
     my $mac = q/00.11.22.33.44.55/;
 
@@ -179,11 +179,11 @@ Feel free to send patches for features you add.
 
 =head1 OO METHODS
 
-=head2 OIE::Utils::MAC->new( mac => $mac )
+=head2 NetAddr::MAC->new( mac => $mac )
 
-Creates and returns a new OIE::Utils::MAC object.  The MAC value is required.
+Creates and returns a new NetAddr::MAC object.  The MAC value is required.
 
-=head2 OIE::Utils::MAC->new( $mac )
+=head2 NetAddr::MAC->new( $mac )
 
 Simplified creation method
 
