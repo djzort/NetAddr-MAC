@@ -2,3 +2,4 @@ NetAddr::MAC - A MAC address object
 
 0.77    2012-06-04
 	- Added changelog
+	- Changed to dzil
