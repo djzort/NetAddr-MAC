@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.77 $)[1];
+$VERSION = (qw$Revision: 0.78 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -237,12 +237,12 @@ sub _mac_to_integers {
     {    # 0019e3010e72
         local $_ = shift(@parts);
         while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
-        return [ map { hex } @parts ];
+        return [ map { hex($_) } @parts ];
     }
 
     # 00:19:e3:01:0e:72
     if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
-        return [ map { hex } @parts ];
+        return [ map { hex($_) } @parts ];
     }
 
     # 0019:e301:0e72
