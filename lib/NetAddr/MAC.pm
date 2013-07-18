@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.78 $)[1];
+$VERSION = (qw$Revision: 0.79 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -156,21 +156,21 @@ Some devices that use EUI-64 addresses include:
 
 =head1 MOTIVATION
 
-We have lots of systems in my work which handle MAC addresses. There was lots
-of code independantly validating and normalising them. So I set about creating
-a reusable module to add to our SOE install so that MAC address handling becomes
-both powerful and trivial at the same time.
+We have lots of systems at my work which handle MAC addresses. There was lots
+of code validating and normalising them all over the place. So I set about
+creating a reusable module to add to our SOE install so that MAC address
+handling becomes both powerful and trivial at the same time.
 
-There are several other MAC address modules on CPAN. I didnt like one of them
-and the one I did like dragged Moose in. So I created this module, taking the
-ideas I liked from the other modules and adding in extra things that I needed
-(and a few features just for completeness) whilst avoiding dependancies and
-avoiding anything that doesnt work on perl 5.6
+There are several other MAC address modules on CPAN. I didn't like one of them
+and the one, I did like, but it dragged Moose in. So I created this module,
+taking the ideas I liked from the other two modules and adding in extra bits
+that I needed (and a few features just for completeness) whilst avoiding
+dependancies and avoiding anything that doesnt work on perl 5.6
 
-I hope the result is useful to others, the concept is to be able to create
+I hope that the result is useful to others, the concept is to be able to create
 an object representing a MAC address based on a string that only very vaguely
-resembles a MAC address. From there to be able to output normalised string
-representations in many common formats.
+resembles a MAC address. From there, to be able to output normalised string
+representations of the mac address in a variety of common formats.
 
 A templating function is deliberately omitted, as very niche outputs can easily
 be derived from the 'basic' format.
@@ -854,13 +854,15 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 
 =head1 SUPPORT
 
-Please use the RT system on CPAN, also many young people like to use Github
+Please use the RT system on CPAN to lodge bugs.
+
+Many young people like to use Github, by all means send me pull requests
 
   https://github.com/djzort/NetAddr-MAC
 
 =head1 AUTHOR
 
-Dean Hamstead C<< <dean.hamstead@optusnet.com.au> >>
+Dean Hamstead C<< <dean@fragfest.com.au> >>
 
 =head1 LICENSE
 

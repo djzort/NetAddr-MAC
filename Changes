@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.79    2013-07-03
+        - Minor changes
+
 0.78    2012-10-03
         - Fixes for RT79915
 
