@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.79 $)[1];
+$VERSION = (qw$Revision: 0.80 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -219,6 +219,10 @@ sub _init {
 sub _mac_to_integers {
 
     my $mac = shift || return;
+
+    # be nice, strip leading and trailing whitespace
+    $mac =~ s/^\s+//;
+    $mac =~ s/\s+$//;
 
     $mac =~ s{^1,\d,}{}
       ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
