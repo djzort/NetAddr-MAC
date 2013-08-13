@@ -225,7 +225,7 @@ sub _mac_to_integers {
 
     my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
-    croak "Invalid MAC format '$mac'"
+    croak "Invalid MAC format '$mac'\n"
       if first { m{[^a-f0-9]}i } @parts;
 
     # 12 characters for EUI-48, 16 for EUI-64
@@ -253,7 +253,7 @@ sub _mac_to_integers {
         ];
     }
 
-    croak "Invalid MAC format '$mac'";
+    croak "Invalid MAC format '$mac'\n";
 
     return;
 }
@@ -527,7 +527,7 @@ sub to_eui48 {
             $self->{mac} = [ @{ $self->{mac} }[ 0 .. 2, 5 .. 7 ] ];
         }
         else {
-            croak 'eui-64 address is not derived from an eui-48 address';
+            croak "eui-64 address is not derived from an eui-48 address\n";
         }
     }
 
