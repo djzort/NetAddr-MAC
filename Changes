@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.80    2013-08-12
+        - Zap leading and trailing white space
+
 0.79    2013-07-03
         - Minor changes
 
