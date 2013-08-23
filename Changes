@@ -1,8 +1,9 @@
 NetAddr::MAC - A MAC address object
 
-0.80    2013-08-12
+0.80    2013-08-23
         - Zap leading and trailing white space
         - Improve error messages
+        - Major changes to error handling, doesnt die anymore. See pod for details
 
 0.79    2013-07-03
         - Minor changes

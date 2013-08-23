@@ -183,9 +183,25 @@ Feel free to send patches for features you add.
 
 Creates and returns a new NetAddr::MAC object.  The MAC value is required.
 
+=head2 NetAddr::MAC->new( mac => $mac, %options )
+
+As above, but %options may include any or none of the following
+
+=over 4
+
+=item * die_on_error
+
+If set to true, errors will result in a die (croak) rather than populating $errstr
+
+=back
+
 =head2 NetAddr::MAC->new( $mac )
 
 Simplified creation method
+
+=head2 NetAddr::MAC->new( $mac, %options )
+
+As above but with %options
 
 =cut
 
@@ -195,11 +211,16 @@ sub new {
     my $c = ref($p) || $p;
     my $self = bless {}, $c;
 
-    croak q|Please provide a mac address|
-      unless @a;
+    unless (@a) {
+        my $e = q|Please provide a mac address|;
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
     # massage a single argument into a mac argument if needed
-    $self->_init( @a == 1 ? ( mac => shift @a ) : @a );
+    $self->_init( @a % 2 ? ( mac => shift @a, @a ) : @a )
+      or return;
 
     return $self;
 
@@ -209,16 +230,35 @@ sub _init {
 
     my ( $self, %args ) = @_;
 
-    $self->{mac}      = _mac_to_integers( $args{mac} );
+    if ( defined $args{die_on_error} ) {
+        $self->{_die}++ if $args{die_on_error};
+    }
+    else {
+        $self->{_die}++ if $NetAddr::MAC::die_on_error;
+    }
+
     $self->{original} = $args{mac};
 
-    return;
+    $self->{mac} = _mac_to_integers( $args{mac} );
+
+    unless ( $self->{mac} ) {
+        croak $NetAddr::MAC::errstr . "\n" if $self->{_die};
+        return;
+    }
+
+    return 1;
 
 }
 
 sub _mac_to_integers {
 
-    my $mac = shift || return;
+    my $mac = shift;
+
+    unless ($mac) {
+        my $e = q|Please provide a mac address|;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
     # be nice, strip leading and trailing whitespace
     $mac =~ s/^\s+//;
@@ -229,8 +269,11 @@ sub _mac_to_integers {
 
     my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
-    croak "Invalid MAC format '$mac'\n"
-      if first { m{[^a-f0-9]}i } @parts;
+    if ( first { m{[^a-f0-9]}i } @parts ) {
+        my $e = "Invalid MAC format '$mac'";
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
     # 12 characters for EUI-48, 16 for EUI-64
     if (
@@ -257,12 +300,10 @@ sub _mac_to_integers {
         ];
     }
 
-    croak "Invalid MAC format '$mac'\n";
+    $NetAddr::MAC::errstr = "Invalid MAC format '$mac'";
 
     return;
 }
-
-=head1 OO METHODS
 
 =head2 original
 
@@ -274,6 +315,20 @@ sub original {
 
     my $self = shift;
     return $self->{original};
+
+}
+
+=head2 errstr
+
+returns the error (if one occured)
+
+=cut
+
+sub errstr {
+
+    my $self = shift;
+    return $NetAddr::MAC::errstr unless ref $self;
+    return $self->{_errstr}
 
 }
 
@@ -440,7 +495,7 @@ sub as_ipv6_suffix {
             my $i = $_;
             $i *= 2;
             sprintf( '%02x%02x', $suffix[$i], $suffix[ $i + 1 ] )
-          } 0 .. 3
+        } 0 .. 3
     );
 }
 
@@ -468,16 +523,17 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 
 sub as_singledash {
     my $self = shift;
+
     # there may be a better way to do this
-    my $len  = scalar @{ $self->{mac} };
+    my $len = scalar @{ $self->{mac} };
     return join(
         q{-},
         join( '',
             map { sprintf( '%02x', $_ ) }
-              @{ $self->{mac} }[ 0 .. ($len / 2 - 1) ] ),
+              @{ $self->{mac} }[ 0 .. ( $len / 2 - 1 ) ] ),
         join( '',
             map { sprintf( '%02x', $_ ) }
-              @{ $self->{mac} }[ ($len / 2)  .. ($len - 1) ] ),
+              @{ $self->{mac} }[ ( $len / 2 ) .. ( $len - 1 ) ] ),
     );
 }
 
@@ -531,7 +587,10 @@ sub to_eui48 {
             $self->{mac} = [ @{ $self->{mac} }[ 0 .. 2, 5 .. 7 ] ];
         }
         else {
-            croak "eui-64 address is not derived from an eui-48 address\n";
+            my $e = 'eui-64 address is not derived from an eui-48 address';
+            croak "$e\n" if $self->{_die};
+            $NetAddr::MAC::errstr = $e;
+            return;
         }
     }
 
@@ -556,7 +615,9 @@ sub to_eui64 {
             @{ $self->{mac} }[ 0 .. 2 ], 0xff,
             0xfe,                        @{ $self->{mac} }[ 3 .. 5 ]
         ];
+
     }
+    else { return }
 
     return 1;
 }
@@ -574,9 +635,15 @@ sub mac_is_eui48 {
     my $mac = shift;
     croak 'please use is_eui48'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_eui48( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_eui48( { mac => $mac } )
 
 }
 
@@ -591,9 +658,15 @@ sub mac_is_eui64 {
     my $mac = shift;
     croak 'please use is_eui64'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_eui64( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_eui64( { mac => $mac } )
 
 }
 
@@ -608,9 +681,15 @@ sub mac_is_multicast {
     my $mac = shift;
     croak 'please use is_multicast'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_multicast( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_multicast( { mac => $mac } )
 
 }
 
@@ -625,9 +704,15 @@ sub mac_is_unicast {
     my $mac = shift;
     croak 'please use is_unicast'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_unicast( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_unicast( { mac => $mac } )
 
 }
 
@@ -642,9 +727,15 @@ sub mac_is_local {
     my $mac = shift;
     croak 'please use is_local'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_local( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_local( { mac => $mac } )
 
 }
 
@@ -659,9 +750,15 @@ sub mac_is_universal {
     my $mac = shift;
     croak 'please use is_universal'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return is_universal( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return is_universal( { mac => $mac } )
 
 }
 
@@ -680,9 +777,15 @@ sub mac_as_basic {
     my $mac = shift;
     croak 'please use as_basic'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_basic( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_basic( { mac => $mac } )
 
 }
 
@@ -700,9 +803,15 @@ sub mac_as_bpr {
     my $mac = shift;
     croak 'please use as_basic'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_bpr( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_bpr( { mac => $mac } )
 
 }
 
@@ -720,9 +829,15 @@ sub mac_as_cisco {
     my $mac = shift;
     croak 'please use as_cisco'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_cisco( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_cisco( { mac => $mac } )
 
 }
 
@@ -740,9 +855,15 @@ sub mac_as_ieee {
     my $mac = shift;
     croak 'please use as_ieee'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_ieee( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_ieee( { mac => $mac } )
 
 }
 
@@ -759,9 +880,15 @@ sub mac_as_ipv6_suffix {
     my $mac = shift;
     croak 'please use as_ipv6_suffix'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_ipv6_suffix( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_ipv6_suffix( { mac => $mac } )
 
 }
 
@@ -780,9 +907,15 @@ sub mac_as_microsoft {
 
     croak 'please use as_microsoft'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_microsoft( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_microsoft( { mac => $mac } )
 
 }
 
@@ -800,9 +933,15 @@ sub mac_as_singledash {
 
     croak 'please use as_singledash'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_singledash( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_singledash( { mac => $mac } )
 
 }
 
@@ -821,9 +960,15 @@ sub mac_as_sun {
 
     croak 'please use as_sun'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_sun( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_sun( { mac => $mac } )
 
 }
 
@@ -842,11 +987,91 @@ sub mac_as_tokenring {
 
     croak 'please use as_tokenring'
       if ref $mac eq __PACKAGE__;
-    croak 'argument must be a string' if ref $mac;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return;
+    }
 
-    return as_tokenring( { mac => _mac_to_integers($mac) } )
+    $mac = _mac_to_integers($mac) or return;
+    return as_tokenring( { mac => $mac } )
 
 }
+
+=head1 ERROR HANDLING
+
+Prior to 0.8 every error resulted in a die (croak) which need to be caught.
+As I have used this module more, having to catch them all the time is tiresome.
+So from 0.8 onwards, errors result in an undef and something being set.
+
+For objects, this something is accessible via B<<$self->errstr>> otherwise
+ther error is in B<$NetAddr::MAC::errstr>;
+
+If you would like to have die (croak) instead, you can either set the global
+B<$NetAddr::MAC::die_on_error> or set the B<die_on_error> option when creating
+an object. When creating objects, the provided option takes priority over the
+global. So if you set the global, then all objects will die - unless you
+specifcy otherwise.
+
+=head2 Global examples
+
+Normal behaviour...
+
+  use NetAddr::MAC qw/mac_as_basic/;
+  $mac = mac_as_basic('aaaa.bbbb.cccc')
+      or die $NetAddr::MAC::errstr;
+
+If you want to catch exceptions (die/croak's)...
+
+  use NetAddr::MAC qw/mac_as_basic/;
+  $NetAddr::MAC::die_on_error = 1; # (or ++ if you like)
+
+  eval { # or use Try::Tiny etc.
+      $mac = mac_as_basic('aaaa.bbbb.cccc');
+  };
+  if ($@) {
+      # something bad happened, so handle it
+  }
+  # all good, so do something
+
+=head2 Object examples
+
+Normal behaviour...
+
+  use NetAddr::MAC;
+  my $obj = NetAddr::MAC->new( mac => 'aabbcc112233')
+      or die $NetAddr::MAC::errstr;
+
+  $mac = $obj->to_eui48
+      or dir $obj->errstr;
+
+If you want to catch exceptions (die/croak's)...
+
+  use NetAddr::MAC;
+  my $obj = NetAddr::MAC->new( mac => 'aabbcc112233', die_on_error => 1 );
+
+  eval { # or use Try::Tiny etc.
+      $mac = $obj->to_eui48
+  };
+  if ($@) {
+      # something bad happened, so handle it
+  }
+  # all good, so do something
+
+Or do it globally
+
+  use NetAddr::MAC;
+  $NetAddr::MAC::die_on_error = 1; # (or ++ if you like)
+  my $obj = NetAddr::MAC->new( mac => 'aabbcc112233');
+
+  eval { # or use Try::Tiny etc.
+      $mac = $obj->to_eui48
+  };
+  if ($@) {
+      # something bad happened, so handle it
+
+  }
 
 =head1 CREDITS
 
@@ -855,18 +1080,20 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 =head1 TODO
 
  - moare tests!
+ - find bugs, squash them
+ - merge in your changes!
 
 =head1 SUPPORT
 
 Please use the RT system on CPAN to lodge bugs.
 
-Many young people like to use Github, by all means send me pull requests
+Many young people like to use Github, so by all means send me pull requests at
 
   https://github.com/djzort/NetAddr-MAC
 
 =head1 AUTHOR
 
-Dean Hamstead C<< <dean@fragfest.com.au> >>
+Dean Hamstead C<< <dean@bytefoundry.com.au> >>
 
 =head1 LICENSE
 
