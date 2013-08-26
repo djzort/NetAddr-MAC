@@ -226,83 +226,106 @@ sub new {
 
 }
 
-sub _init {
+{
 
-    my ( $self, %args ) = @_;
+    my $_die;
 
-    if ( defined $args{die_on_error} ) {
-        $self->{_die}++ if $args{die_on_error};
+    sub _init {
+
+        my ( $self, %args ) = @_;
+
+        if ( defined $args{die_on_error} ) {
+            $self->{_die}++ if $args{die_on_error};
+        }
+        else {
+            $self->{_die}++ if $NetAddr::MAC::die_on_error;
+        }
+
+        $_die++ if $self->{_die};
+
+        $self->{original} = $args{mac};
+
+        $self->{mac} = _mac_to_integers( $args{mac} );
+
+        unless ( $self->{mac} ) {
+            croak $NetAddr::MAC::errstr . "\n" if $self->{_die};
+            return;
+        }
+
+        return 1;
+
     }
-    else {
-        $self->{_die}++ if $NetAddr::MAC::die_on_error;
-    }
 
-    $self->{original} = $args{mac};
+    sub _mac_to_integers {
 
-    $self->{mac} = _mac_to_integers( $args{mac} );
+        my $mac = shift;
+        my $e;
 
-    unless ( $self->{mac} ) {
-        croak $NetAddr::MAC::errstr . "\n" if $self->{_die};
-        return;
-    }
+        for (1) {
 
-    return 1;
+            unless ($mac) {
+                $e = 'Please provide a mac address';
+                last;
+            }
 
-}
+            # be nice, strip leading and trailing whitespace
+            $mac =~ s/^\s+//;
+            $mac =~ s/\s+$//;
 
-sub _mac_to_integers {
+            $mac =~ s{^1,\d,}{}
+              ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
 
-    my $mac = shift;
+            my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
-    unless ($mac) {
-        my $e = q|Please provide a mac address|;
+            # anything other than hex...
+            last if ( first { m{[^a-f0-9]}i } @parts );
+
+            # 12 characters for EUI-48, 16 for EUI-64
+            if (
+                @parts == 1
+                && (   length $parts[0] == EUI48LENGTHHEX
+                    || length $parts[0] == EUI64LENGTHHEX )
+              )
+            {    # 0019e3010e72
+                local $_ = shift(@parts);
+                while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
+                return [ map { hex($_) } @parts ];
+            }
+
+            # 00:19:e3:01:0e:72
+            if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
+                return [ map { hex($_) } @parts ];
+            }
+
+            # 0019:e301:0e72
+            if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 )
+            {
+                return [
+                    map {
+                        m{^ ([a-f0-9]{2}) ([a-f0-9]{2}) $}ix
+                          && ( hex($1), hex($2) )
+                    } @parts
+                ];
+            }
+
+            last
+
+        } # just so we can jump out
+
+        $e ||= "Invalid MAC format '$mac'";
+
+        if ( defined $_die ) {
+            croak "$e\n" if $_die;
+        }
+        elsif ($NetAddr::MAC::die_on_error) {
+            croak "$e\n";
+        }
+
         $NetAddr::MAC::errstr = $e;
+
         return;
     }
 
-    # be nice, strip leading and trailing whitespace
-    $mac =~ s/^\s+//;
-    $mac =~ s/\s+$//;
-
-    $mac =~ s{^1,\d,}{}
-      ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
-
-    my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
-
-    if ( first { m{[^a-f0-9]}i } @parts ) {
-        my $e = "Invalid MAC format '$mac'";
-        $NetAddr::MAC::errstr = $e;
-        return;
-    }
-
-    # 12 characters for EUI-48, 16 for EUI-64
-    if (
-        @parts == 1
-        && (   length $parts[0] == EUI48LENGTHHEX
-            || length $parts[0] == EUI64LENGTHHEX )
-      )
-    {    # 0019e3010e72
-        local $_ = shift(@parts);
-        while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
-        return [ map { hex($_) } @parts ];
-    }
-
-    # 00:19:e3:01:0e:72
-    if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
-        return [ map { hex($_) } @parts ];
-    }
-
-    # 0019:e301:0e72
-    if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 ) {
-        return [
-            map { m{^ ([a-f0-9]{2}) ([a-f0-9]{2}) $}ix && ( hex($1), hex($2) ) }
-              @parts
-        ];
-    }
-
-    $NetAddr::MAC::errstr = "Invalid MAC format '$mac'";
-
-    return;
 }
 
 =head2 original
@@ -579,8 +602,8 @@ sub to_eui48 {
     # be slightly evil here, so that hashrefs and objects work
     if ( is_eui64($self) ) {
         if ( @{ $self->{mac} }[3] == 0xff
-            and ( @{ $self->{mac} }[4] == 0xff or @{ $self->{mac} }[4] == 0xfe )
-          )
+            and
+            ( @{ $self->{mac} }[4] == 0xff or @{ $self->{mac} }[4] == 0xfe ) )
         {
 
             # convert to eui-48
