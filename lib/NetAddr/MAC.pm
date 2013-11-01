@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.80 $)[1];
+$VERSION = (qw$Revision: 0.81 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -279,6 +279,14 @@ sub new {
 
             # anything other than hex...
             last if ( first { m{[^a-f0-9]}i } @parts );
+
+            # resolve wierd things like aabb.cc.00.11.22 or 11.22.33.aabbcc
+
+            @parts = map {
+                my $o = $_;
+                (length($o) % 2) == 0 ? $o =~ m/(..)/g
+                                      : $o
+                } @parts;
 
             # 12 characters for EUI-48, 16 for EUI-64
             if (

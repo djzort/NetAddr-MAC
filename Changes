@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.81    2013-11-01
+        - Handle strange things like aabb.cc.11.22.33 or 11.22.33.aabbcc
+
 0.80    2013-08-23
         - Zap leading and trailing white space
         - Improve error messages
