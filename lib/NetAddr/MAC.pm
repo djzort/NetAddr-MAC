@@ -252,6 +252,11 @@ sub new {
             return;
         }
 
+        if (scalar grep {!defined $_ or 0 == length $_} @{$self->{mac}}) {
+            croak "Invalid MAC format '$self->{original}'\n" if $self->{_die};
+            return;
+        }
+
         return 1;
 
     }
