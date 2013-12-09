@@ -2,7 +2,7 @@
 
 use strict;
 use warnings FATAL => 'all';
-use Test::More 0.88;
+use Test::More tests => 6;
 
 BEGIN {
   use_ok('NetAddr::MAC');
@@ -25,8 +25,6 @@ eval{NetAddr::MAC->new('1:1')};
 like ($@,
   qr/Invalid MAC format/, 'Bad MAC octet');
 
-eval{NetAddr::MAC->new('11:22:33:44')};
+eval{NetAddr::MAC->new('11:22:33')};
 like ($@,
   qr/Invalid MAC format/, 'Short MAC');
-
-done_testing;

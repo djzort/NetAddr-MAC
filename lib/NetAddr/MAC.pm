@@ -314,6 +314,12 @@ sub new {
             # 0019:e301:0e72
             if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 )
             {
+                # it would be nice to accept no leading 0's but this gives
+                # problems detecting broken formatted macs.
+                # cisco doesnt drop leading zeros so lets go for the least
+                # edgey of the edge cases.
+                last if (first {length $_ < 4} @parts);
+
                 return [
                     map {
                         m{^ ([a-f0-9]{2}) ([a-f0-9]{2}) $}ix
