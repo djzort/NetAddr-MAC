@@ -11,22 +11,22 @@ $NetAddr::MAC::die_on_error = 1;
 
 eval{NetAddr::MAC->new('')};
 like ($@,
-  qr/Please provide a mac address/i, "Empty MAC");
+  qr/Please provide a mac address/i, 'Empty MAC');
 
 eval{NetAddr::MAC->new()};
 like ($@,
-  qr/please provide a mac address/i, "Undef MAC");
+  qr/please provide a mac address/i, 'Undef MAC');
 
 eval{NetAddr::MAC->new('11:22:33:44:xx:55')};
 like ($@,
-  qr/Invalid MAC format/, "Bad MAC character");
+  qr/Invalid MAC format/, 'Bad MAC character');
 
 eval{NetAddr::MAC->new('1:1')};
 like ($@,
-  qr/Invalid MAC format/, "Bad MAC octet");
+  qr/Invalid MAC format/, 'Bad MAC octet');
 
 eval{NetAddr::MAC->new('11:22:33:44')};
 like ($@,
-  qr/Invalid MAC format/, "Short MAC");
+  qr/Invalid MAC format/, 'Short MAC');
 
 done_testing;
