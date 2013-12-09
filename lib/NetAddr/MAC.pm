@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.81 $)[1];
+$VERSION = (qw$Revision: 0.82 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -252,7 +252,8 @@ sub new {
             return;
         }
 
-        if (scalar grep {!defined $_ or 0 == length $_} @{$self->{mac}}) {
+        # check none of the list elements are empty
+        if (first { not defined $_ or 0 == length $_} @{$self->{mac}}) {
             croak "Invalid MAC format '$self->{original}'\n" if $self->{_die};
             return;
         }
