@@ -130,7 +130,6 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
     print 'Sun Format: ',  mac_as_sun($mac),"\n";
     print 'Token Ring Format: ',mac_as_tokenring($mac),"\n";
 
-
 =head1 DESCRIPTION
 
 This module provides an interface to deal with Media Access Control (or MAC)
@@ -1116,6 +1115,10 @@ Or do it globally
       # something bad happened, so handle it
 
   }
+
+=head1 VERSION
+
+ 0.82
 
 =head1 CREDITS
 
