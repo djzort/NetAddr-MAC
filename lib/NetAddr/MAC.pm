@@ -1044,7 +1044,7 @@ sub mac_as_tokenring {
 
 =head1 ERROR HANDLING
 
-Prior to 0.8 every error resulted in a die (croak) which need to be caught.
+Prior to 0.8 every error resulted in a die (croak) which needed to be caught.
 As I have used this module more, having to catch them all the time is tiresome.
 So from 0.8 onwards, errors result in an undef and something being set.
 
