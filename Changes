@@ -1,5 +1,9 @@
 NetAddr::MAC - A MAC address object
 
+Floating.
+
+        - Some typos in the pod of MAC.pm
+
 0.82    2013-12-09
         - Tests for bad mac addresses from Oliver Gorwits (http://gorwits.me.uk/)
         - For Cisco format 1111.2222.3333 - we no longer support dropping leading zeros. This was a trade off to better detect broken mac's. Cisco doesnt drop them anyway so its, IMO, the most sensible compromise.
