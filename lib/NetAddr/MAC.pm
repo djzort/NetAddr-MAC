@@ -73,6 +73,7 @@ $VERSION = (qw$Revision: 0.82 $)[1];
 
 Exporter::export_ok_tags( keys %EXPORT_TAGS );
 
+=encoding utf8
 =head1 NAME
 
 NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
@@ -1046,16 +1047,16 @@ sub mac_as_tokenring {
 
 Prior to 0.8 every error resulted in a die (croak) which needed to be caught.
 As I have used this module more, having to catch them all the time is tiresome.
-So from 0.8 onwards, errors result in an undef and something being set.
+So from 0.8 onwards, errors result in an I<undef> and something being set.
 
-For objects, this something is accessible via B<<$self->errstr>> otherwise
+For objects, this something is accessible via B<$self-E<gt>errstr> otherwise
 ther error is in B<$NetAddr::MAC::errstr>;
 
 If you would like to have die (croak) instead, you can either set the global
 B<$NetAddr::MAC::die_on_error> or set the B<die_on_error> option when creating
 an object. When creating objects, the provided option takes priority over the
 global. So if you set the global, then all objects will die - unless you
-specifcy otherwise.
+specify otherwise.
 
 =head2 Global examples
 
