@@ -1,8 +1,9 @@
 NetAddr::MAC - A MAC address object
 
-Floating.
-
+0.82_01    2014-06-03
         - Some typos in the pod of MAC.pm
+        - Fixing RT96045 (https://rt.cpan.org/Public/Bug/Display.html?id=96045) reported by Oliver Gorwits.
+        - Closed out RT79915, no changes here but bugs caused by yucky overrides to core functions
 
 0.82    2013-12-09
         - Tests for bad mac addresses from Oliver Gorwits (http://gorwits.me.uk/)
