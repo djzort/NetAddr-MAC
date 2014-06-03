@@ -1,4 +1,5 @@
 #!/bin/false
+# ABSTRACT: MAC address functions and object
 
 package NetAddr::MAC;
 use strict;
@@ -371,10 +372,10 @@ returns the error (if one occured).
 This is intended for use with the object. Its not exported at all.
 
 Note: this method is used once the NetAddr::MAC object is successfully
-created. For now the to_eui48 method is the only method that will 
+created. For now the to_eui48 method is the only method that will
 return an error once the object is created.
 
-When creating objects, you will need to catch errors with either the 
+When creating objects, you will need to catch errors with either the
 I<or> function, or the I<eval> way.
 
 =cut
@@ -670,9 +671,9 @@ sub to_eui64 {
 
         # convert to eui-64
         $self->{mac} = [
-            @{ $self->{mac} }[ 0 .. 2 ], 
+            @{ $self->{mac} }[ 0 .. 2 ],
             0xff,
-            0xfe,                        
+            0xfe,
             @{ $self->{mac} }[ 3 .. 5 ]
         ];
 

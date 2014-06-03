@@ -4,6 +4,7 @@ NetAddr::MAC - A MAC address object
         - Some typos in the pod of MAC.pm
         - Fixing RT96045 (https://rt.cpan.org/Public/Bug/Display.html?id=96045) reported by Oliver Gorwits.
         - Closed out RT79915, no changes here but bugs caused by yucky overrides to core functions
+        - Tweaks to the README file and added the # ABSTRACT: line
 
 0.82    2013-12-09
         - Tests for bad mac addresses from Oliver Gorwits (http://gorwits.me.uk/)
@@ -24,5 +25,5 @@ NetAddr::MAC - A MAC address object
         - Fixes for RT79915
 
 0.77    2012-06-04
-	- Added changelog
-	- Changed to dzil
+        - Added changelog
+        - Changed to dzil
