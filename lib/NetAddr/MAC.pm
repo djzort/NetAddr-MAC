@@ -172,7 +172,11 @@ As above, but %options may include any or none of the following
 
 =item * die_on_error
 
-If set to true, errors will result in a die (croak) rather than populating $errstr
+If set to true, errors will result in a die (croak) rather than populating I<$errstr>
+
+B<Take care when using the mac_is_* functions!> they will return false in both
+the case of an error and according to the properties of the MAC address. You will
+therefore need to enable die_on_error or check I<$errstr> when false is returned.
 
 =back
 

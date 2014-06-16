@@ -1,5 +1,11 @@
 NetAddr::MAC - A MAC address object
 
+0.82_01    2014-06-16
+        - Fiddled more with the pod in MAC.pm
+        - Added t/140-new.t
+        - Enhancements to t/150-misc-bad-formats-via-die.t
+
+
 0.82_01    2014-06-03
         - Some typos in the pod of MAC.pm
         - Fixing RT96045 (https://rt.cpan.org/Public/Bug/Display.html?id=96045) reported by Oliver Gorwits.
