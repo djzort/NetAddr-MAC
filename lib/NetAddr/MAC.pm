@@ -136,7 +136,7 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
 This module provides an interface to deal with Media Access Control (or MAC)
 addresses.  These are the addresses that uniquely identify a device on
 various layer 2 networks. Although the most common case is hardware addresses
-on Ethernet network cards, there are a variety of devices that use this 
+on Ethernet network cards, there are a variety of devices that use this
 system of addressing.
 
 This module supports both EUI-48 and EUI-64 addresses and implements an
@@ -1153,8 +1153,8 @@ the same terms as Perl itself.
 
 There are lots of systems at my (then) place of work which handle MAC
 addresses. There was lots of code validating and normalising them all over
-the place - most of it was quirky and sloppy. So I set about creating a 
-reusable module to add to our SOE install so that MAC address handling 
+the place - most of it was quirky and sloppy. So I set about creating a
+reusable module to add to our SOE install so that MAC address handling
 would become consistent, reliable, powerful and trivial.
 
 Generally speaking this module fulfills that goal. It's very convenient
