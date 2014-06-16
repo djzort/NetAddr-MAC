@@ -134,13 +134,15 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
 =head1 DESCRIPTION
 
 This module provides an interface to deal with Media Access Control (or MAC)
-addresses.  These are the addresses that uniquely identify a device on a
-layer 2 network.  Although the common case is hardware addresses on Ethernet
-network cards, there are a variety of devices that use this system.
+addresses.  These are the addresses that uniquely identify a device on
+various layer 2 networks. Although the most common case is hardware addresses
+on Ethernet network cards, there are a variety of devices that use this 
+system of addressing.
+
 This module supports both EUI-48 and EUI-64 addresses and implements an
 OO and a functional interface.
 
-Some devices that use EUI-48 (or MAC-48) addresses include:
+Some networks that use EUI-48 (or MAC-48) addresses include:
 
     Ethernet
     802.11 wireless networks
@@ -149,34 +151,12 @@ Some devices that use EUI-48 (or MAC-48) addresses include:
     FDDI
     ATM
 
-Some devices that use EUI-64 addresses include:
+Some networks that use EUI-64 addresses include:
 
     Firewire
-    IPv6
+    IPv6 (sort of)
     ZigBee / 802.15.4 wireless personal-area networks
 
-=head1 MOTIVATION
-
-We have lots of systems at my work which handle MAC addresses. There was lots
-of code validating and normalising them all over the place. So I set about
-creating a reusable module to add to our SOE install so that MAC address
-handling becomes both powerful and trivial at the same time.
-
-There are several other MAC address modules on CPAN. I didn't like one of them
-and the one, I did like, but it dragged Moose in. So I created this module,
-taking the ideas I liked from the other two modules and adding in extra bits
-that I needed (and a few features just for completeness) whilst avoiding
-dependancies and avoiding anything that doesnt work on perl 5.6
-
-I hope that the result is useful to others, the concept is to be able to create
-an object representing a MAC address based on a string that only very vaguely
-resembles a MAC address. From there, to be able to output normalised string
-representations of the mac address in a variety of common formats.
-
-A templating function is deliberately omitted, as very niche outputs can easily
-be derived from the 'basic' format.
-
-Feel free to send patches for features you add.
 
 =head1 OO METHODS
 
@@ -1164,6 +1144,34 @@ Dean Hamstead C<< <dean@bytefoundry.com.au> >>
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
+
+=head1 MOTIVATION
+
+There are lots of systems at my (then) place of work which handle MAC
+addresses. There was lots of code validating and normalising them all over
+the place - most of it was quirky and sloppy. So I set about creating a 
+reusable module to add to our SOE install so that MAC address handling 
+would become consistent, reliable, powerful and trivial.
+
+Generally speaking this module fulfills that goal. It's very convenient
+to be able to use MAC addresses in any format throughout those systems.
+
+There are several other MAC address modules on CPAN. I didn't like the
+interface on one, the other dragged in Moose. So I created this module,
+taking the ideas I liked from the other two modules and adding in extra bits
+that I needed (and a few features just for completeness) whilst avoiding
+dependancies and avoiding anything that doesnt work on perl 5.6
+
+I hope that the result is useful to others, the concept is to be able to create
+an object representing a MAC address based on a string that only very vaguely
+resembles a MAC address. From there, to be able to output normalised string
+representations of the mac address in a variety of common formats.
+
+A templating function is deliberately omitted, as very niche outputs can easily
+be derived from the 'basic' format.
+
+Feel free to send patches for features you add, I appreciate those who
+have done so far and endeavour to incoporate new patches ASAP.
 
 =cut
 
