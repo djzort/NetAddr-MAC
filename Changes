@@ -1,6 +1,6 @@
 NetAddr::MAC - A MAC address object
 
-0.82_01    2014-06-16
+0.83    2014-06-24
         - Fiddled more with the pod in MAC.pm
         - Added t/140-new.t
         - Enhancements to t/150-misc-bad-formats-via-die.t

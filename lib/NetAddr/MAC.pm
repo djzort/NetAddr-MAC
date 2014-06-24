@@ -39,7 +39,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.82 $)[1];
+$VERSION = (qw$Revision: 0.83 $)[1];
 
 %EXPORT_TAGS = (
     all => [
