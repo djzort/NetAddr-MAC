@@ -667,7 +667,7 @@ sub to_eui64 {
     return 1;
 }
 
-=head1 STAND ALONE PROPERTY FUNCTIONS
+=head1 PROCEDURAL PROPERTY FUNCTIONS
 
 =head2 mac_is_eui48($mac)
 
@@ -807,7 +807,7 @@ sub mac_is_universal {
 
 }
 
-=head1 STAND ALONE NORMALIZATION METHODS
+=head1 PROCEDURAL NORMALIZATION METHODS
 
 =head2 mac_as_basic($mac)
 
