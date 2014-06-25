@@ -1089,7 +1089,7 @@ Normal behaviour...
       or die $NetAddr::MAC::errstr;
 
   $mac = $obj->to_eui48
-      or dir $obj->errstr;
+      or die $obj->errstr;
 
 If you want to catch exceptions (die/croak's)...
 
