@@ -39,7 +39,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.83 $)[1];
+$VERSION = (qw$Revision: 0.84 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -52,6 +52,7 @@ $VERSION = (qw$Revision: 0.83 $)[1];
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
           mac_as_tokenring mac_as_singledash
+          mac_as_pgsql
           )
     ],
     properties => [
@@ -68,6 +69,7 @@ $VERSION = (qw$Revision: 0.83 $)[1];
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
           mac_as_tokenring mac_as_singledash
+          mac_as_pgsql
           )
     ],
 );
@@ -178,6 +180,26 @@ B<Take care when using the mac_is_* functions!> they will return false in both
 the case of an error and according to the properties of the MAC address. You will
 therefore need to enable die_on_error or check I<$errstr> when false is returned.
 
+=item * priority
+
+This is the bridge priority as an integer, which can also be set by providing a mac
+address in the following format, where 60 is the priority.
+
+ 60#0011.22aa.bbcc
+
+This is a cisco thing, so typically the above is the format you would see. But we
+are flexible enough to handle formats like...
+
+ 60#00:11:22:aa:bb:cc
+ 60#001122aabbcc
+ 60#00-11-22-aa-bb-cc
+ etc.
+
+If priority is provided as an option and as part of the mac address string, an
+error will occur only if they differ.
+
+Priority defaults to 0 if not provided.
+
 =back
 
 =head2 NetAddr::MAC->new( $mac )
@@ -196,21 +218,21 @@ sub new {
     my $c = ref($p) || $p;
     my $self = bless {}, $c;
 
-	# clear the errstr, see also RT96045
-	$NetAddr::MAC::errstr = undef;
+    # clear the errstr, see also RT96045
+    $NetAddr::MAC::errstr = undef;
 
     unless (@a) {
         my $e = q|Please provide a mac address|;
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     # massage a single argument into a mac argument if needed
     $self->_init( @a % 2 ? ( mac => shift @a, @a ) : @a )
       or return;
 
-    return $self;
+    return $self
 
 }
 
@@ -233,20 +255,39 @@ sub new {
 
         $self->{original} = $args{mac};
 
+        if ($args{mac} =~ m/^(\d+)\#(.+)$/ ) {
+            $self->{priority} = $1;
+            $args{mac} = $2;
+        }
+
         $self->{mac} = _mac_to_integers( $args{mac} );
 
         unless ( $self->{mac} ) {
             croak $NetAddr::MAC::errstr . "\n" if $self->{_die};
-            return;
+            return
+        }
+
+        if (defined $self->{priority}) {
+            if ($args{priority} and $args{priority} != $self->{priority}) {
+                my $e = "Conflicting priority in '$self->{original}' and priority argument $args{priority}";
+                croak "$e\n" if $self->{_die};
+                $NetAddr::MAC::errstr = $e;
+                return
+            }
+        }
+        else {
+            $self->{priority} = $args{priority} || 0;
         }
 
         # check none of the list elements are empty
         if (first { not defined $_ or 0 == length $_} @{$self->{mac}}) {
-            croak "Invalid MAC format '$self->{original}'\n" if $self->{_die};
-            return;
+            my $e = "Invalid MAC format '$self->{original}'";
+            croak "$e\n" if $self->{_die};
+            $NetAddr::MAC::errstr = $e;
+            return
         }
 
-        return 1;
+        return 1
 
     }
 
@@ -291,12 +332,12 @@ sub new {
             {    # 0019e3010e72
                 local $_ = shift(@parts);
                 while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
-                return [ map { hex($_) } @parts ];
+                return [ map { hex($_) } @parts ]
             }
 
             # 00:19:e3:01:0e:72
             if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
-                return [ map { hex($_) } @parts ];
+                return [ map { hex($_) } @parts ]
             }
 
             # 0019:e301:0e72
@@ -331,7 +372,7 @@ sub new {
 
         $NetAddr::MAC::errstr = $e;
 
-        return;
+        return
     }
 
 }
@@ -345,7 +386,27 @@ returns the original B<mac> string as used when creating the MAC object
 sub original {
 
     my $self = shift;
-    return $self->{original};
+    return $self->{original}
+
+}
+
+=head2 oui
+
+returns the mac address's Organizationally Unique Identifier (OUI) with dashes
+in Hexadecimal / Canonical format:
+
+ AC-DE-48
+
+=cut
+
+sub oui {
+
+    my $self = shift;
+    return uc join(
+        q{-},
+            map { sprintf( '%02x', $_ ) }
+            @{ $self->{mac} }[0 .. 2]
+        );
 
 }
 
@@ -382,7 +443,7 @@ returns true if mac address is determined to be of the EUI48 standard
 
 sub is_eui48 {
     my $self = shift;
-    return scalar @{ $self->{mac} } == EUI48LENGTHDEC;
+    return scalar @{ $self->{mac} } == EUI48LENGTHDEC
 }
 
 =head2 is_eui64
@@ -393,7 +454,7 @@ returns true if mac address is determined to be of the EUI64 standard
 
 sub is_eui64 {
     my $self = shift;
-    return scalar @{ $self->{mac} } == EUI64LENGTHDEC;
+    return scalar @{ $self->{mac} } == EUI64LENGTHDEC
 }
 
 =head2 is_multicast
@@ -404,7 +465,7 @@ returns true if mac address is determined to be a multicast address
 
 sub is_multicast {
     my $self = shift;
-    return $self->{mac}->[0] & 1;
+    return $self->{mac}->[0] & 1
 }
 
 =head2 is_unicast
@@ -415,7 +476,7 @@ returns true if mac address is determined to be a unicast address
 
 sub is_unicast {
     my $self = shift;
-    return !is_multicast($self);
+    return !is_multicast($self)
 }
 
 =head2 is_local
@@ -426,7 +487,7 @@ returns true if mac address is determined to be locally administered
 
 sub is_local {
     my $self = shift;
-    return $self->{mac}->[0] & 2;
+    return $self->{mac}->[0] & 2
 }
 
 =head2 is_universal
@@ -437,8 +498,7 @@ returns true if mac address is determined to be universally administered
 
 sub is_universal {
     my $self = shift;
-
-    return !is_local($self);
+    return !is_local($self)
 }
 
 =head1 OO NORMALIZATION METHODS
@@ -453,7 +513,22 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 
 sub as_basic {
     my $self = shift;
-    return join( q{}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
+    return join( q{}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
+}
+
+=head2 as_bridge_id
+
+returns mac address with the priority, a hash, then the mac address normalized with I<as_cisco>
+
+ 45#0011.22aa.bbcc
+
+=cut
+
+sub as_bridge_id {
+    my $self = shift;
+    return $self->{priority}
+        . '#'
+        . $self->as_cisco;
 }
 
 =head2 as_bpr
@@ -486,7 +561,7 @@ sub as_cisco {
     my $self = shift;
     return join( q{.},
         map { m{([a-f0-9]{4})}gxi }
-          join( q{}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } ) );
+          join( q{}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } ) )
 }
 
 =head2 as_ieee
@@ -500,7 +575,7 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 
 sub as_ieee {
     my $self = shift;
-    return join( q{-}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
+    return join( q{-}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
 }
 
 =head2 as_ipv6_suffix
@@ -550,12 +625,38 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 
 sub as_microsoft {
     my $self = shift;
-    return join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } );
+    return join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
+}
+
+=head2 as_pgsql
+
+returns the mac address normalized as a hexidecimal string that is 0 padded and has a I<:> in the middle of the hex string.
+this appears in the pgsql documentation along with the single dash version
+
+ 001122:334455
+
+=cut
+
+sub as_pgsql {
+    my $self = shift;
+
+    # there may be a better way to do this
+    my $len = scalar @{ $self->{mac} };
+    return join(
+        q{:},
+        join( '',
+            map { sprintf( '%02x', $_ ) }
+              @{ $self->{mac} }[ 0 .. ( $len / 2 - 1 ) ] ),
+        join( '',
+            map { sprintf( '%02x', $_ ) }
+              @{ $self->{mac} }[ ( $len / 2 ) .. ( $len - 1 ) ] ),
+    );
 }
 
 =head2 as_singledash
 
 returns the mac address normalized as a hexidecimal string that is 0 padded and has a dash in the middle of the hex string.
+this appears in the pgsql documentation.
 
  001122-334455
 
@@ -588,7 +689,7 @@ returns the mac address normalized as a hexidecimal string that is B<not> padded
 
 sub as_sun {
     my $self = shift;
-    return join( q{-}, map { sprintf( '%01x', $_ ) } @{ $self->{mac} } );
+    return join( q{-}, map { sprintf( '%01x', $_ ) } @{ $self->{mac} } )
 }
 
 =head2 as_tokenring
@@ -603,7 +704,7 @@ returns the mac address normalized as a hexidecimal string that is 0 padded and 
 sub as_tokenring {
 
     my $self = shift;
-    return join( q{-}, map { (ETHER2TOKEN)[$_] } @{ $self->{mac} } );
+    return join( q{-}, map { (ETHER2TOKEN)[$_] } @{ $self->{mac} } )
 }
 
 =head2 to_eui48
@@ -632,17 +733,18 @@ sub to_eui48 {
         else {
             my $e = 'eui-64 address is not derived from an eui-48 address';
             croak "$e\n" if $self->{_die};
-  		    $self->{_errstr} = $e;
-  		    return
+            $self->{_errstr} = $e;
+            return
         }
     }
 
-    return 1;
+    return 1
 }
 
 =head2 to_eui64
 
-converts to EUI-64
+converts to EUI-64, or in other words encapsulates EUI-48 to become EUI-64
+if needed
 
 =cut
 
@@ -664,7 +766,7 @@ sub to_eui64 {
     }
     else { return }
 
-    return 1;
+    return 1
 }
 
 =head1 PROCEDURAL PROPERTY FUNCTIONS
@@ -684,7 +786,7 @@ sub mac_is_eui48 {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -707,7 +809,7 @@ sub mac_is_eui64 {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -730,7 +832,7 @@ sub mac_is_multicast {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -753,7 +855,7 @@ sub mac_is_unicast {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -776,7 +878,7 @@ sub mac_is_local {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -799,7 +901,7 @@ sub mac_is_universal {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -826,7 +928,7 @@ sub mac_as_basic {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -852,7 +954,7 @@ sub mac_as_bpr {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -878,7 +980,7 @@ sub mac_as_cisco {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -904,7 +1006,7 @@ sub mac_as_ieee {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -929,7 +1031,7 @@ sub mac_as_ipv6_suffix {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -956,7 +1058,7 @@ sub mac_as_microsoft {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -964,9 +1066,37 @@ sub mac_as_microsoft {
 
 }
 
+=head2 mac_as_pgsql($mac)
+
+returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and a single B<:> delimiter
+in the middle. this format appears in their documenation, along with single dash version
+
+ 003456:789abc
+
+=cut
+
+sub mac_as_pgsql {
+
+    my $mac = shift;
+
+    croak 'please use as_pgsql'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return as_pgsql( { mac => $mac } )
+
+}
+
 =head2 mac_as_singledash($mac)
 
 returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and has a dash in the middle of the hex string.
+this appears in the pgsql documenation
 
  001122-334455
 
@@ -982,7 +1112,7 @@ sub mac_as_singledash {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -1009,7 +1139,7 @@ sub mac_as_sun {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;
@@ -1036,7 +1166,7 @@ sub mac_as_tokenring {
         my $e = 'argument must be a string';
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
-        return;
+        return
     }
 
     $mac = _mac_to_integers($mac) or return;

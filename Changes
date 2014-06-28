@@ -1,5 +1,10 @@
 NetAddr::MAC - A MAC address object
 
+0.84    2014-06-28
+        - Added priority and as_bridge_id functions, subsuming NetAddr::BridgeID's functionality (but without Moose)
+        - Added oui function
+        - Added as_pgsql and mac_as_pgsql functions
+
 0.83    2014-06-24
         - Fiddled more with the pod in MAC.pm
         - Added t/140-new.t

@@ -7,18 +7,6 @@ use Test::More tests => 6;
 require_ok('NetAddr::MAC')
 	or die "# NetAddr::MAC not available\n";
 
-my @all = qw(
-          mac_is_eui48     mac_is_eui64
-          mac_is_unicast   mac_is_multicast
-          mac_is_local     mac_is_universal
-          mac_as_basic     mac_as_sun
-          mac_as_microsoft mac_as_cisco
-          mac_as_bpr       mac_as_ieee
-          mac_as_ipv6_suffix
-          mac_as_tokenring mac_as_singledash
-
-);
-
 my @properties = qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
@@ -31,7 +19,10 @@ my @normals = qw(
           mac_as_bpr       mac_as_ieee
           mac_as_ipv6_suffix
           mac_as_tokenring mac_as_singledash
+          mac_as_pgsql
 );
+
+my @all = ( @properties, @normals );
 
 can_ok('NetAddr::MAC', @all, @properties, @normals);
 

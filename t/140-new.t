@@ -2,7 +2,7 @@
 
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 11;
+use Test::More tests => 15;
 
 BEGIN {
   use_ok('NetAddr::MAC')
@@ -37,16 +37,25 @@ like ($NetAddr::MAC::errstr,
 
 my $ret = NetAddr::MAC->new('742b62803518');
 ok( $ret, 'return value is true for 742b62803518' );
+ok( $ret->oui eq '74-2B-62', 'oui is 74-2B-62');
 ok( ! $NetAddr::MAC::errstr, 'errstr emptied after 742b62803518');
 
 }
 
+# play with priority
+{
+
+my $ret = NetAddr::MAC->new('60#742b62803518');
+ok( $ret, 'return value is true for 60#742b62803518' );
+ok( $ret->{priority} == 60, 'internal priority is 60' );
+ok( $ret->as_bridge_id eq '60#742b.6280.3518', 'as_bridge_id is correct' );
+
+}
 
 __END__
 
 eval{NetAddr::MAC->new()};
 like ($@,
-  qr/please provide a mac address/i, 'Undef MAC');
 
 eval{NetAddr::MAC->new('11:22:33:44:xx:55')};
 like ($@,
