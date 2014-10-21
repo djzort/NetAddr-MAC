@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 127;
+use Test::More tests => 142;
 use Test::Trap;
 
 BEGIN {
@@ -61,6 +61,8 @@ BEGIN {
 
 }
 
+{
+
     # 10 tests x2
     my @eui64macs = (
         '0011223344556677',        '00-11-22-33-44-55-66-77',
@@ -75,7 +77,7 @@ BEGIN {
         ok( !mac_is_eui48($mac), 'eui48 = false from ' . $mac );
     }
 
-#          mac_is_unicast   mac_is_multicast
+#          mac_is_unicast   mac_is_multicast   mac_is_broadcast
 
     my @unicasteui48macs = qw(
       001122334455
@@ -92,6 +94,7 @@ BEGIN {
     for my $mac ( @unicasteui48macs, @unicasteui64macs ) {
         ok( mac_is_unicast($mac), 'unicast correctly identified from ' . $mac );
         ok( !mac_is_multicast($mac), 'multicast = false from ' . $mac );
+        ok( !mac_is_broadcast($mac), 'broadcast = false from ' . $mac );
     }
 
     my @multicasteui48macs = qw(
@@ -110,7 +113,24 @@ BEGIN {
         ok( mac_is_multicast($mac),
             'multicast correctly identified from ' . $mac );
         ok( !mac_is_unicast($mac), 'unicast = false from ' . $mac );
+        ok( !mac_is_broadcast($mac), 'broadcast = false from ' . $mac );
     }
+
+    my @broadcasteui48macs = qw(
+      ffffffffffff
+    );
+
+    for my $mac ( @broadcasteui48macs ) {
+        ok( mac_is_broadcast($mac),
+            'broadcast correctly identified from ' . $mac );
+        ok( !mac_is_unicast($mac), 'unicast = false from ' . $mac );
+        ok( !mac_is_multicast($mac), 'multicast = false from ' . $mac );
+    }
+
+}
+
+#      is_local    is_universal
+{
 
     my @localeui48macs = qw(
       02aa.bbcc.2233
@@ -154,5 +174,7 @@ BEGIN {
             'universal correctly identified from ' . $mac );
         ok( !mac_is_local($mac), 'local = false from ' . $mac );
     }
+
+}
 
 1

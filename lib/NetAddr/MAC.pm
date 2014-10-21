@@ -39,13 +39,14 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.84 $)[1];
+$VERSION = (qw$Revision: 0.85 $)[1];
 
 %EXPORT_TAGS = (
     all => [
         qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
+          mac_is_broadcast
           mac_is_local     mac_is_universal
           mac_as_basic     mac_as_sun
           mac_as_microsoft mac_as_cisco
@@ -59,6 +60,7 @@ $VERSION = (qw$Revision: 0.84 $)[1];
         qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
+          mac_is_broadcast
           mac_is_local     mac_is_universal
           )
     ],
@@ -95,6 +97,7 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
 
     print "Unicast\n" if $mac->is_unicast;
     print "Multicast\n" if $mac->is_multicast;
+    print "Broadcast\n" if $mac->is_broadcast;
 
     print "Locally Administerd\n" if $mac->is_local;
     print "Universally Administered\n" if $mac->is_universal;
@@ -119,6 +122,7 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
 
     print "Unicast\n" if mac_is_unicast($mac);
     print "Multicast\n" if mac_is_multicast($mac);
+    print "Broadcast\n" if mac_is_broadcast($mac);
 
     print "Locally Administerd\n" if mac_is_local($mac);
     print "Universally Administered\n" if mac_is_universal($mac);
@@ -465,7 +469,24 @@ returns true if mac address is determined to be a multicast address
 
 sub is_multicast {
     my $self = shift;
-    return $self->{mac}->[0] & 1
+
+    return $self->{mac}->[0] & 1 && ! is_broadcast($self);
+}
+
+
+=head2 is_broadcast
+
+returns true if mac address is determined to be a broadcast address
+
+=cut
+
+sub is_broadcast {
+    my $self = shift;
+
+    for (@{$self->{mac}}) {
+        return 0 if $_ != 255
+    }
+    return 1
 }
 
 =head2 is_unicast
@@ -476,7 +497,7 @@ returns true if mac address is determined to be a unicast address
 
 sub is_unicast {
     my $self = shift;
-    return !is_multicast($self)
+    return ! $self->{mac}->[0] & 1;
 }
 
 =head2 is_local
@@ -837,6 +858,30 @@ sub mac_is_multicast {
 
     $mac = _mac_to_integers($mac) or return;
     return is_multicast( { mac => $mac } )
+
+}
+
+
+=head2 mac_is_broadcast($mac)
+
+returns true if mac address in $mac is determined to be a broadcast address
+
+=cut
+
+sub mac_is_broadcast {
+
+    my $mac = shift;
+    croak 'please use is_broadcast'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_broadcast( { mac => $mac } )
 
 }
 
@@ -1250,7 +1295,7 @@ Or do it globally
 
 =head1 VERSION
 
- 0.82
+ 0.85
 
 =head1 CREDITS
 
@@ -1261,6 +1306,8 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
  - moare tests!
  - find bugs, squash them
  - merge in your changes!
+ - add hsrp function for 00:00:0c:07:ac:*
+ - add vrrp function for 00:00:5e:00:01:*
 
 =head1 SUPPORT
 
