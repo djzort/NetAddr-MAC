@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 142;
+use Test::More tests => 220;
 use Test::Trap;
 
 BEGIN {
@@ -78,6 +78,7 @@ BEGIN {
     }
 
 #          mac_is_unicast   mac_is_multicast   mac_is_broadcast
+#          mac_is_vrrp    mac_is_hsrp    mac_is_hsrp2
 
     my @unicasteui48macs = qw(
       001122334455
@@ -125,6 +126,59 @@ BEGIN {
             'broadcast correctly identified from ' . $mac );
         ok( !mac_is_unicast($mac), 'unicast = false from ' . $mac );
         ok( !mac_is_multicast($mac), 'multicast = false from ' . $mac );
+    }
+
+    my @vrrpeui48macs = qw(
+      00-00-5E-00-01-12
+      00-00-5E-00-01-A5
+      00-00-5E-00-01-CF
+      00-00-5E-00-01-3B
+    );
+
+    my @hsrpeui48macs = qw(
+      0000.0C07.AC12
+      0000.0C07.ACA5
+      0000.0C07.ACCF
+      0000.0C07.AC3B
+    );
+
+    my @hsrp2eui48macs = qw(
+      0000.0C9F.F001
+      0000.0C9F.FC12
+      0000.0C9F.F1C3
+      0000.0C9F.F12A
+      0000.0C9F.FF2A
+      0000.0C9F.FABC
+    );
+
+    for my $mac ( @unicasteui64macs, @multicasteui64macs ) {
+        ok( !mac_is_vrrp($mac),  'eui64 is never vrrp from ' . $mac);
+        ok( !mac_is_hsrp($mac),  'eui64 is never hsrp from ' . $mac);
+        ok( !mac_is_hsrp2($mac), 'eui64 is never hsrp2 from ' . $mac);
+    }
+
+    for my $mac ( @unicasteui48macs, @unicasteui48macs ) {
+        ok( !mac_is_vrrp($mac),  'vrrp  = false from ' . $mac);
+        ok( !mac_is_hsrp($mac),  'hsrp  = false from ' . $mac);
+        ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+    }
+
+    for my $mac ( @vrrpeui48macs ) {
+        ok( mac_is_vrrp($mac), 'vrrp correctly identified from ' . $mac);
+        ok( !mac_is_hsrp($mac),  'hsrp  = false from ' . $mac);
+        ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+    }
+
+    for my $mac ( @hsrpeui48macs) {
+        ok( mac_is_hsrp($mac), 'hsrp correctly identified from ' . $mac);
+        ok( !mac_is_vrrp($mac),  'vrrp  = false from ' . $mac);
+        ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+    }
+
+    for my $mac ( @hsrp2eui48macs) {
+        ok( mac_is_hsrp2($mac), 'hsrp2 correctly identified from ' . $mac);
+        ok( !mac_is_vrrp($mac), 'vrrp  = false from ' . $mac);
+        ok( !mac_is_hsrp($mac), 'hsrp  = false from ' . $mac);
     }
 
 }

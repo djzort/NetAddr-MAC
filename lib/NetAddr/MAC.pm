@@ -5,8 +5,7 @@ package NetAddr::MAC;
 use strict;
 use warnings;
 
-use Carp qw(croak);
-
+use Carp qw( croak );
 use List::Util qw( first );
 
 use constant EUI48LENGTHHEX => 12;
@@ -39,14 +38,15 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.85 $)[1];
+$VERSION = (qw$Revision: 0.86 $)[1];
 
 %EXPORT_TAGS = (
     all => [
         qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
-          mac_is_broadcast
+          mac_is_broadcast mac_is_vrrp
+          mac_is_hsrp      mac_is_hsrp2
           mac_is_local     mac_is_universal
           mac_as_basic     mac_as_sun
           mac_as_microsoft mac_as_cisco
@@ -60,7 +60,8 @@ $VERSION = (qw$Revision: 0.85 $)[1];
         qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
-          mac_is_broadcast
+          mac_is_broadcast mac_is_vrrp
+          mac_is_hsrp      mac_is_hsrp2
           mac_is_local     mac_is_universal
           )
     ],
@@ -489,6 +490,77 @@ sub is_broadcast {
     return 1
 }
 
+=head2 is_vrrp
+
+returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address
+
+ie. 00-00-5E-00-01-XX
+
+always returns false for eui64.
+
+I'm not quite sure what to do with 01-00-5E-00-00-12, suggestions welcomed.
+
+=cut
+
+sub is_vrrp {
+    my $self = shift;
+
+    return
+        is_eui48($self) &&
+        $self->{mac}->[0] == 0 &&
+        $self->{mac}->[1] == 0 &&
+        $self->{mac}->[2] == hex('0x5e') &&
+        $self->{mac}->[3] == 0 &&
+        $self->{mac}->[4] == 1;
+
+}
+
+=head2 is_hsrp
+
+returns true if mac address is determined to be a Hot Standby Router (HSRP) address
+
+ie. 00-00-0C-07-AC-XX
+
+always returns false for eui64.
+
+=cut
+
+sub is_hsrp {
+    my $self = shift;
+
+    return
+        is_eui48($self) &&
+        $self->{mac}->[0] == 0 &&
+        $self->{mac}->[1] == 0 &&
+        $self->{mac}->[2] == hex('0xc') &&
+        $self->{mac}->[3] == 7 &&
+        $self->{mac}->[4] == hex('0xac');
+
+}
+
+=head2 is_hsrp2
+
+returns true if mac address is determined to be a Hot Standby Router Version 2 (HSRPv2) address
+
+ie. 00-00-0C-9F-FX-XX
+
+always returns false for eui64.
+
+=cut
+
+sub is_hsrp2 {
+    my $self = shift;
+
+    return
+        is_eui48($self) &&
+        $self->{mac}->[0] == 0 &&
+        $self->{mac}->[1] == 0 &&
+        $self->{mac}->[2] == hex('0xc') &&
+        $self->{mac}->[3] == hex('0x9f');
+        $self->{mac}->[4] >= 240; # 0xFX
+
+}
+
 =head2 is_unicast
 
 returns true if mac address is determined to be a unicast address
@@ -908,6 +980,85 @@ sub mac_is_unicast {
 
 }
 
+=head2 mac_is_vrrp($mac)
+
+returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address
+
+ie. 00-00-5E-00-01-XX
+
+=cut
+
+sub mac_is_vrrp {
+
+    my $mac = shift;
+    croak 'please use is_vrrp'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_vrrp( { mac => $mac } )
+
+}
+
+
+=head2 mac_is_hsrp($mac)
+
+returns true if mac address is $mac is determined to be a Hot Standby Router (HSRP) address
+
+ie. 00-00-0C-07-AC-XX
+
+=cut
+
+sub mac_is_hsrp {
+
+    my $mac = shift;
+    croak 'please use is_hsrp'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_hsrp( { mac => $mac } )
+
+}
+
+=head2 mac_is_hsrp2($mac)
+
+returns true if mac address is $mac is determined to be a Hot Standby Router Version 2 (HSRPv2) address
+
+ie. 00-00-0C-9F-FX-XX
+
+=cut
+
+sub mac_is_hsrp2 {
+
+    my $mac = shift;
+    croak 'please use is_hsrp2'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_hsrp2( { mac => $mac } )
+
+}
+
 =head2 mac_is_local($mac)
 
 returns true if mac address in $mac is determined to be locally administered
@@ -1306,8 +1457,6 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
  - moare tests!
  - find bugs, squash them
  - merge in your changes!
- - add hsrp function for 00:00:0c:07:ac:*
- - add vrrp function for 00:00:5e:00:01:*
 
 =head1 SUPPORT
 

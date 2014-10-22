@@ -1,5 +1,9 @@
 NetAddr::MAC - A MAC address object
 
+0.86    2014-10-22
+        - Added is_vrrp property
+        - Added is_hsrp and is_hsrp2 properties
+
 0.85    2014-10-21
         - Added is_broadcast property, ff:ff:ff:ff:ff:ff no longer returns true for is_multicast
 

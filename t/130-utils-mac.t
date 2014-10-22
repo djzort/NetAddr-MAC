@@ -10,7 +10,8 @@ require_ok('NetAddr::MAC')
 my @properties = qw(
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
-          mac_is_broadcast
+          mac_is_broadcast mac_is_vrrp
+          mac_is_hsrp      mac_is_hsrp2
           mac_is_local     mac_is_universal
 );
 
