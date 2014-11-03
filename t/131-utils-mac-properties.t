@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 220;
+use Test::More tests => 254;
 use Test::Trap;
 
 BEGIN {
@@ -151,36 +151,52 @@ BEGIN {
       0000.0C9F.FABC
     );
 
+    my @msnlbeui48macs = qw(
+      02bf.0C9F.F001
+      03bf.0C9F.FC12
+    );
+
     for my $mac ( @unicasteui64macs, @multicasteui64macs ) {
         ok( !mac_is_vrrp($mac),  'eui64 is never vrrp from ' . $mac);
         ok( !mac_is_hsrp($mac),  'eui64 is never hsrp from ' . $mac);
         ok( !mac_is_hsrp2($mac), 'eui64 is never hsrp2 from ' . $mac);
+        ok( !mac_is_msnlb($mac), 'eui64 is never msnlb from ' . $mac);
     }
 
     for my $mac ( @unicasteui48macs, @unicasteui48macs ) {
         ok( !mac_is_vrrp($mac),  'vrrp  = false from ' . $mac);
         ok( !mac_is_hsrp($mac),  'hsrp  = false from ' . $mac);
         ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+        ok( !mac_is_msnlb($mac), 'msnlb  = false from ' . $mac);
     }
 
     for my $mac ( @vrrpeui48macs ) {
         ok( mac_is_vrrp($mac), 'vrrp correctly identified from ' . $mac);
         ok( !mac_is_hsrp($mac),  'hsrp  = false from ' . $mac);
         ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+        ok( !mac_is_msnlb($mac), 'msnlb  = false from ' . $mac);
     }
 
     for my $mac ( @hsrpeui48macs) {
         ok( mac_is_hsrp($mac), 'hsrp correctly identified from ' . $mac);
         ok( !mac_is_vrrp($mac),  'vrrp  = false from ' . $mac);
         ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+        ok( !mac_is_msnlb($mac), 'msnlb  = false from ' . $mac);
     }
 
     for my $mac ( @hsrp2eui48macs) {
         ok( mac_is_hsrp2($mac), 'hsrp2 correctly identified from ' . $mac);
         ok( !mac_is_vrrp($mac), 'vrrp  = false from ' . $mac);
         ok( !mac_is_hsrp($mac), 'hsrp  = false from ' . $mac);
+        ok( !mac_is_msnlb($mac), 'msnlb  = false from ' . $mac);
     }
 
+    for my $mac ( @msnlbeui48macs) {
+        ok( mac_is_msnlb($mac), 'msnlb correctly identified from ' . $mac);
+        ok( !mac_is_vrrp($mac), 'vrrp  = false from ' . $mac);
+        ok( !mac_is_hsrp($mac), 'hsrp  = false from ' . $mac);
+        ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
+    }
 }
 
 #      is_local    is_universal

@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.87    2014-11-04
+        - Added is_msnlb property, for Microsoft Network Load Balancing MAC addresses. See also http://msdn.microsoft.com/en-us/library/bb742455.aspx
+
 0.86    2014-10-22
         - Added is_vrrp property
         - Added is_hsrp and is_hsrp2 properties

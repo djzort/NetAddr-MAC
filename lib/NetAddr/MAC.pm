@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.86 $)[1];
+$VERSION = (qw$Revision: 0.87 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -47,6 +47,7 @@ $VERSION = (qw$Revision: 0.86 $)[1];
           mac_is_unicast   mac_is_multicast
           mac_is_broadcast mac_is_vrrp
           mac_is_hsrp      mac_is_hsrp2
+          mac_is_msnlb
           mac_is_local     mac_is_universal
           mac_as_basic     mac_as_sun
           mac_as_microsoft mac_as_cisco
@@ -62,6 +63,7 @@ $VERSION = (qw$Revision: 0.86 $)[1];
           mac_is_unicast   mac_is_multicast
           mac_is_broadcast mac_is_vrrp
           mac_is_hsrp      mac_is_hsrp2
+          mac_is_msnlb
           mac_is_local     mac_is_universal
           )
     ],
@@ -561,6 +563,32 @@ sub is_hsrp2 {
 
 }
 
+
+=head2 is_msnlb
+
+returns true if mac address is determined to be a MS Network Load Balancing MAC address
+
+ie. 02-BF-1-2-3-4 for unicast or 03-BF-1-2-3-4 for multicast
+
+where 1-2-3-4 is the clusters primary IP address
+
+for outbound packets, clusters members will send from 02-n-1-2-3-4 where n is the node priorty. this function does NOT return true for those adddresses.
+
+always returns false for eui64.
+
+=cut
+
+sub is_msnlb {
+    my $self = shift;
+
+    return
+        is_eui48($self) &&
+        ($self->{mac}->[0] == 2
+            || $self->{mac}->[0] == 3) &&
+        $self->{mac}->[1] == hex('0xbf')
+
+}
+
 =head2 is_unicast
 
 returns true if mac address is determined to be a unicast address
@@ -1056,6 +1084,32 @@ sub mac_is_hsrp2 {
 
     $mac = _mac_to_integers($mac) or return;
     return is_hsrp2( { mac => $mac } )
+
+}
+
+=head2 mac_is_msnlb($mac)
+
+returns true if mac address is $mac is determined to be a MS Network Load Balancing address
+
+ie. 02-BF-XX-XX-XX-XX or 03-BF-XX-XX-XX-XX
+
+=cut
+
+sub mac_is_msnlb {
+
+    my $mac = shift;
+    croak 'please use is_msnlb'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_msnlb( { mac => $mac } )
 
 }
 
