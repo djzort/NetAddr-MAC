@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.87 $)[1];
+$VERSION = (qw$Revision: 0.9 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -687,16 +687,16 @@ sub as_cisco {
 
 =head2 as_ieee
 
-returns the mac address normalized as a hexidecimal string that is 0 padded and with B<-> delimiting every octet
+returns the mac address normalized as a hexidecimal string that is 0 padded and with B<:> delimiting every octet
 (ie after every 2nd character)
 
- 00-34-56-78-9a-bc
+ 00:34:56:78:9a:bc
 
 =cut
 
 sub as_ieee {
     my $self = shift;
-    return join( q{-}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
+    return join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
 }
 
 =head2 as_ipv6_suffix
@@ -737,16 +737,16 @@ sub as_ipv6_suffix {
 
 =head2 as_microsoft
 
-returns the mac address normalized as a hexidecimal string that is 0 padded and with B<:> delimiting every octet
+returns the mac address normalized as a hexidecimal string that is 0 padded and with B<-> delimiting every octet
 (ie after every 2nd character)
 
- 00:34:56:78:9a:bc
+ 00-34-56-78-9a-bc
 
 =cut
 
 sub as_microsoft {
     my $self = shift;
-    return join( q{:}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
+    return join( q{-}, map { sprintf( '%02x', $_ ) } @{ $self->{mac} } )
 }
 
 =head2 as_pgsql
@@ -1240,10 +1240,10 @@ sub mac_as_cisco {
 
 =head2 mac_as_ieee($mac)
 
-returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and with B<-> delimiting every octet
+returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and with B<:> delimiting every octet
 (ie after every 2nd character)
 
- 00-34-56-78-9a-bc
+ 00:34:56:78:9a:bc
 
 =cut
 
@@ -1291,10 +1291,10 @@ sub mac_as_ipv6_suffix {
 
 =head2 mac_as_microsoft($mac)
 
-returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and with B<:> delimiting every octet
+returns the mac address in $mac normalized as a hexidecimal string that is 0 padded and with B<-> delimiting every octet
 (ie after every 2nd character)
 
- 00:34:56:78:9a:bc
+ 00-34-56-78-9a-bc
 
 =cut
 
