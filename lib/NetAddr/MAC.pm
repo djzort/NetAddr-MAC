@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.9 $)[1];
+$VERSION = (qw$Revision: 0.91 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -316,6 +316,10 @@ sub new {
 
             $mac =~ s{^1,\d,}{}
               ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
+
+            # avoid matching ipv6
+            last if $mac =~ m/[a-f0-9]{4}:[a-f0-9]{4}::([a-f0-9]{4})?/i;
+            last if $mac =~ m/[a-f0-9]{4}::[a-f0-9]{4}:[a-f0-9]{4}/i;
 
             my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
@@ -1500,7 +1504,7 @@ Or do it globally
 
 =head1 VERSION
 
- 0.85
+ 0.91
 
 =head1 CREDITS
 

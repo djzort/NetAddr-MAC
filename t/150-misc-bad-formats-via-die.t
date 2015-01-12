@@ -2,7 +2,7 @@
 
 use strict;
 use warnings FATAL   => 'all';
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 BEGIN {
     use_ok('NetAddr::MAC')
@@ -29,5 +29,14 @@ BEGIN {
 
     eval { NetAddr::MAC->new('11:22:33') };
     like( $@, qr/Invalid MAC format/, 'Short MAC' );
+
+    eval { NetAddr::MAC->new('2001:0db8::fe01') };
+    like( $@, qr/Invalid MAC format/, 'IPv6 that could be MAC 1' );
+
+    eval { NetAddr::MAC->new('2001::0db8:fe05') };
+    like( $@, qr/Invalid MAC format/, 'IPv6 that could be MAC 2' );
+
+    eval { NetAddr::MAC->new('2001:0db8:fe0a::') };
+    like( $@, qr/Invalid MAC format/, 'IPv6 that could be MAC 3' );
 
 }

@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.91    2015-01-12
+        - Reject strings that could be MAC addresses but which are clearly abbreviated IPv6
+
 0.9     2014-11-16
         - WARNING: Incompatible changes in this release! Oliver G has pointed out that the as_microsoft and as_ieee were switched. I have swapped their output formats in this version and bumped the version to 0.9. This change brings the API in sync with Net::MAC.
 
