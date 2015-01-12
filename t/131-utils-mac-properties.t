@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 254;
+use Test::More tests => 272;
 use Test::Trap;
 
 BEGIN {
@@ -81,12 +81,14 @@ BEGIN {
 #          mac_is_vrrp    mac_is_hsrp    mac_is_hsrp2
 
     my @unicasteui48macs = qw(
+      c82a14eeeeee
       001122334455
       003344aaccdd
       00.11.22.33.44.aa
     );
 
     my @unicasteui64macs = qw(
+      c82a14eeeeeeeeee
       0011223344556677
       00aabbcc223344aa
       00.bb.cc.aa.55.66

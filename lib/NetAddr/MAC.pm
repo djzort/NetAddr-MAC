@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 
 use base qw( Exporter );
 use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.91 $)[1];
+$VERSION = (qw$Revision: 0.92 $)[1];
 
 %EXPORT_TAGS = (
     all => [
@@ -477,7 +477,7 @@ returns true if mac address is determined to be a multicast address
 sub is_multicast {
     my $self = shift;
 
-    return $self->{mac}->[0] & 1 && ! is_broadcast($self);
+    return ($self->{mac}->[0] & 1) && ! is_broadcast($self);
 }
 
 
@@ -601,7 +601,7 @@ returns true if mac address is determined to be a unicast address
 
 sub is_unicast {
     my $self = shift;
-    return ! $self->{mac}->[0] & 1;
+    return ! ($self->{mac}->[0] & 1);
 }
 
 =head2 is_local
@@ -1504,7 +1504,7 @@ Or do it globally
 
 =head1 VERSION
 
- 0.91
+ 0.92
 
 =head1 CREDITS
 

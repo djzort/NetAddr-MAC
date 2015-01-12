@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.92    2015-01-13
+        - Fix for is_unicast RT101508. Thanks to Aaron (vitahall@cpan.org) for the bug report and patch including tests!
+
 0.91    2015-01-12
         - Reject strings that could be MAC addresses but which are clearly abbreviated IPv6
 
