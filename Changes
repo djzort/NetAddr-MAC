@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.93    2015-01-26
+        - Further improve exclusion of ipv6 addresses that look like enough like mac addresses to pass
+
 0.92    2015-01-13
         - Fix for is_unicast RT101508. Thanks to Aaron (vitahall@cpan.org) for the bug report and patch including tests!
 
