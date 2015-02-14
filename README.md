@@ -8,17 +8,17 @@ for this module is moderate functionality without Moose.
 With that in mind, you can understand why I have cloned much of the really
 useful functionality from the two or three existing similar modules on CPAN.
 
-I've covered off all the mac address formats I deal with in my workplace 
-of mixed hardware. This module can decode just about anything that looks 
-reasonably like a mac address, and stringify into every format I have seen 
+I've covered off all the mac address formats I deal with in my workplace
+of mixed hardware. This module can decode just about anything that looks
+reasonably like a mac address, and stringify into every format I have seen
 used...
 
-So sorry, I'm not really interesting in adding a templating function to 
-define your own mac address formats. You're welcome to either send in a 
+So sorry, I'm not really interesting in adding a templating function to
+define your own mac address formats. You're welcome to either send in a
 patch, extend this module or quickly write a function that wraps the 'raw'
 output to whatever you want. Match and join are your friends :)
 
-Hopefully this module is useful to you. So far I have been pleased with 
+Hopefully this module is useful to you. So far I have been pleased with
 the amount of feedback and patches people have sent in, this has been very
 rewarding as well as providing a number of new features I have been able
 to use myself.

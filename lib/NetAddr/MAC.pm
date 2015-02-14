@@ -1,9 +1,10 @@
 #!/bin/false
 # ABSTRACT: MAC address functions and object
 
-package NetAddr::MAC;
 use strict;
 use warnings;
+package NetAddr::MAC;
+
 
 use Carp qw( croak );
 use List::Util qw( first );
@@ -37,8 +38,7 @@ use constant ETHER2TOKEN => (
 );
 
 use base qw( Exporter );
-use vars qw( $VERSION %EXPORT_TAGS @EXPORT_OK );
-$VERSION = (qw$Revision: 0.93 $)[1];
+use vars qw( %EXPORT_TAGS @EXPORT_OK );
 
 %EXPORT_TAGS = (
     all => [
@@ -1501,10 +1501,6 @@ Or do it globally
       # something bad happened, so handle it
 
   }
-
-=head1 VERSION
-
- 0.92
 
 =head1 CREDITS
 

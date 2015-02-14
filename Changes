@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.94    2015-02-14
+        - Minor changes for updated dist.ini
+
 0.93    2015-01-26
         - Further improve exclusion of ipv6 addresses that look like enough like mac addresses to pass
 
