@@ -166,7 +166,6 @@ Some networks that use EUI-64 addresses include:
     IPv6 (sort of)
     ZigBee / 802.15.4 wireless personal-area networks
 
-
 =head1 OO METHODS
 
 =head2 NetAddr::MAC->new( mac => $mac )
@@ -1505,6 +1504,13 @@ Or do it globally
 =head1 CREDITS
 
 Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
+
+=head1 SEE ALSO
+
+In some circumstances, the L<Regexp::Common::net> might be a slimmer solution.
+
+If you find L<Device::MAC> or L<Net::MAC> to be more suitable, please send
+feedback so I can improve!
 
 =head1 TODO
 
