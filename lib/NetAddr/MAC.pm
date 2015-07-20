@@ -1509,6 +1509,8 @@ Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 
 In some circumstances, the L<Regexp::Common::net> might be a slimmer solution.
 
+L<Net::MAC::Vendor> is useful for doing vendor look up.
+
 If you find L<Device::MAC> or L<Net::MAC> to be more suitable, please send
 feedback so I can improve!
 
