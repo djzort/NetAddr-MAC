@@ -1,4 +1,5 @@
-sudo: false
+# not actually required, just because Archive::Zip tests fail
+sudo: required
 language: perl
 perl:
    - 'blead'
@@ -14,6 +15,9 @@ matrix:
       - perl: 'blead'
       - perl: '5.8'
    fast_finish: true
+   include:
+      - perl: 5.20
+        env: COVERAGE=1
 before_install:
    - git config --global user.name "TravisCI"
    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
