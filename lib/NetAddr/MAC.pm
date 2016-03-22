@@ -82,6 +82,7 @@ use vars qw( %EXPORT_TAGS @EXPORT_OK );
 Exporter::export_ok_tags( keys %EXPORT_TAGS );
 
 =encoding utf8
+
 =head1 NAME
 
 NetAddr::MAC - Handles hardware MAC Addresses (EUI-48 and EUI-64)
