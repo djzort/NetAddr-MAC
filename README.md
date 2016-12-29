@@ -29,4 +29,4 @@ https://github.com/djzort/NetAddr-MAC
 -Dean
 
 [![Build Status](https://travis-ci.org/djzort/NetAddr-MAC.svg?branch=master)](https://travis-ci.org/djzort/NetAddr-MAC)
-[![CPAN version](https://badge.fury.io/pl/NetAddr::MAC.svg)](https://metacpan.org/pod/NetAddr::MAC)
+[![CPAN version](https://badge.fury.io/pl/NetAddr-MAC.svg)](https://metacpan.org/pod/NetAddr::MAC)
