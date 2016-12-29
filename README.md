@@ -1,5 +1,5 @@
-NetAddr:MAC
------------
+NetAddr::MAC
+------------
 
 This is a module with functions for handling mac addresses. There are
 already two or three MAC addressing functions in CPAN, the motivation
@@ -29,3 +29,4 @@ https://github.com/djzort/NetAddr-MAC
 -Dean
 
 [![Build Status](https://travis-ci.org/djzort/NetAddr-MAC.svg?branch=master)](https://travis-ci.org/djzort/NetAddr-MAC)
+[![CPAN version](https://badge.fury.io/pl/NetAddr::MAC.svg)](https://metacpan.org/pod/NetAddr::MAC)
