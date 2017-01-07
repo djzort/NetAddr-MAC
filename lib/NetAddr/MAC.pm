@@ -38,7 +38,7 @@ use constant ETHER2TOKEN => (
 );
 
 use base qw( Exporter );
-use vars qw( %EXPORT_TAGS @EXPORT_OK );
+use vars qw( %EXPORT_TAGS );
 
 %EXPORT_TAGS = (
     all => [
