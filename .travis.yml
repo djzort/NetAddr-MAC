@@ -3,7 +3,6 @@ sudo: required
 language: perl
 os:
    - linux
-   - osx
 perl:
    - 'blead'
    - '5.24'
@@ -24,8 +23,6 @@ matrix:
       - perl: '5.24'
         env: COVERAGE=1
 before_install:
-# Fix for OSX
-   - curl -L https://cpanmin.us | perl - App::cpanminus
    - git config --global user.name "TravisCI"
    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
 install:
