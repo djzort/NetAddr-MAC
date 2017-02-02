@@ -221,14 +221,14 @@ As above but with %options
 
 sub new {
 
-    my ( $p, @a ) = @_;
+    my ( $p, @q ) = @_;
     my $c = ref($p) || $p;
     my $self = bless {}, $c;
 
     # clear the errstr, see also RT96045
     $NetAddr::MAC::errstr = undef;
 
-    unless (@a) {
+    unless (@q) {
         my $e = q|Please provide a mac address|;
         croak "$e\n" if $NetAddr::MAC::die_on_error;
         $NetAddr::MAC::errstr = $e;
@@ -236,7 +236,7 @@ sub new {
     }
 
     # massage a single argument into a mac argument if needed
-    $self->_init( @a % 2 ? ( mac => shift @a, @a ) : @a )
+    $self->_init( @q % 2 ? ( mac => shift @q, @q ) : @q )
       or return;
 
     return $self
@@ -1528,15 +1528,6 @@ Please use the RT system on CPAN to lodge bugs.
 Many young people like to use Github, so by all means send me pull requests at
 
   https://github.com/djzort/NetAddr-MAC
-
-=head1 AUTHOR
-
-Dean Hamstead C<< <dean@bytefoundry.com.au> >>
-
-=head1 LICENSE
-
-This program is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =head1 MOTIVATION
 
