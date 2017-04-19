@@ -1,5 +1,8 @@
 NetAddr::MAC - A MAC address object
 
+0.95    2017-04-19
+        - POD spelling and whitespace
+
 0.94    2015-02-14
         - Minor changes for updated dist.ini
 
