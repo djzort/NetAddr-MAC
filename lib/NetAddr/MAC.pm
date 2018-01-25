@@ -114,7 +114,7 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI48 and EUI64)
  print "Multicast\n" if $mac->is_multicast;
  print "Broadcast\n" if $mac->is_broadcast;
 
- print "Locally Administerd\n" if $mac->is_local;
+ print "Locally Administered\n" if $mac->is_local;
  print "Universally Administered\n" if $mac->is_universal;
 
  print 'Basic Format: ',$mac->as_basic,"\n";
