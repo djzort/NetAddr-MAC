@@ -688,7 +688,7 @@ sub as_bpr {
 
 Returns the mac address normalized as a hexadecimal string that is 0 padded and with B<.> delimiting every 2nd octet
 (i.e. after every 4th character)
-.
+
  0011.22aa.bbcc
 
 =cut
