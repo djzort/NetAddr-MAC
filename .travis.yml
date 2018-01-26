@@ -28,7 +28,7 @@ before_install:
 install:
    - cpanm --quiet --notest --skip-satisfied Dist::Zilla
    - "dzil authordeps          --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
-   - "perl -e 'exit 0 if $] >= 5.02' && cpanm --verbose Dist::Zilla::Plugin::Covenant"
+   - "if perl -e 'exit 0 if $] >= 5.02; exit 1'; then cpanm --verbose Dist::Zilla::Plugin::Covenant; else true; fi"
    - "dzil listdeps   --author --missing | grep -vP '[^\\w:]' | cpanm --verbose"
 script:
    - dzil smoke --release --author
