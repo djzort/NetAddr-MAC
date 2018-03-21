@@ -1543,7 +1543,7 @@ Many young people like to use Github, so by all means send me pull requests at
 =head1 MOTIVATION
 
 There are lots of systems at my (then) place of work which handle MAC
-addresses. There was lots of code validating and normalising them all over
+addresses. There was lots of code validating and normalizing them all over
 the place - most of it was quirky and sloppy. So I set about creating a
 reusable module to add to our SOE install so that MAC address handling
 would become consistent, reliable, powerful and trivial.
@@ -1559,7 +1559,7 @@ dependencies and avoiding anything that doesn't work on perl 5.6
 
 I hope that the result is useful to others, the concept is to be able to create
 an object representing a MAC address based on a string that only very vaguely
-resembles a MAC address. From there, to be able to output normalised string
+resembles a MAC address. From there, to be able to output normalized string
 representations of the mac address in a variety of common formats.
 
 A templating function is deliberately omitted, as very niche outputs can easily
