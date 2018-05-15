@@ -2,32 +2,49 @@
 sudo: required
 language: perl
 os:
-   - linux
+  - linux
 perl:
-   - 'blead'
-   - '5.24'
-   - '5.22'
-   - '5.20'
-   - '5.18'
-   - '5.16'
-   - '5.14'
-#   - '5.12'
-#   - '5.10'
-#   - '5.8'
+  - 'blead'
+  - '5.26'
+  - '5.24'
+  - '5.22'
+  - '5.20'
+  - '5.18'
+  - '5.16'
+  - '5.14'
+  - '5.12'
+  - '5.10'
+  - '5.8'
+env:
+  global:
+    - AUTHOR_TESTING=1
+    - AUTOMATED_TESTING=1
+    - RELEASE_TESTING=0
 matrix:
-   allow_failures:
-      - perl: 'blead'
-      - perl: '5.8'
-   fast_finish: true
-   include:
-      - perl: '5.24'
-        env: COVERAGE=1
+  allow_failures:
+    - perl: 'blead'
+    - perl: '5.8'
+  fast_finish: true
+  include:
+    - perl: '5.26'
+      env: COVERAGE=1
 before_install:
-   - git config --global user.name "TravisCI"
-   - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
+  - git config --global user.name "TravisCI"
+  - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source ~/travis-perl-helpers/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
 install:
-   - cpanm --quiet --notest --skip-satisfied Dist::Zilla
-   - "dzil authordeps --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
-   - "dzil listdeps --author --missing | grep -vP '[^\\w:]' | cpanm --verbose"
+  - perl -M5.014 -e1 2>/dev/null || cpan-install Dist::Zilla@5.047
+  - cpan-install --deps
+  #  - cpanm --quiet --notest --skip-satisfied Dist::Zilla
+  #  - "dzil authordeps --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
+  #  - "dzil listdeps --author --missing | grep -vP '[^\\w:]' | cpanm --verbose"
 script:
-   - dzil smoke --release --author
+  - perl Build.PL
+  - ./Build
+  - prove -b -r -s -j1 $(test-files)
+  #  - dzil smoke --release --author
