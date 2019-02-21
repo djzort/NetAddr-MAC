@@ -1,5 +1,5 @@
 #!/bin/false
-# ABSTRACT: MAC address functions and object
+# ABSTRACT: MAC hardware address functions and object (EUI48 and EUI64)
 
 use strict;
 use warnings;
@@ -94,10 +94,6 @@ eui48 eui64
 
 =end stopwords
 
-=head1 NAME
-
-NetAddr::MAC - Handles hardware MAC Addresses (EUI48 and EUI64)
-
 =head1 SYNOPSIS
 
  use NetAddr::MAC;
@@ -154,14 +150,13 @@ NetAddr::MAC - Handles hardware MAC Addresses (EUI48 and EUI64)
 
 =head1 DESCRIPTION
 
-This module provides an interface to deal with Media Access Control (or MAC)
-addresses.  These are the addresses that uniquely identify a device on
-various layer 2 networks. Although the most common case is hardware addresses
-on Ethernet network cards, there are a variety of devices that use this
-system of addressing.
+This module provides an OO and functional interface to deal with Media Access
+Control (or MAC) addresses. These are the addresses that uniquely identify a
+device on various layer 2 networks. Although the most common case is hardware
+addresses on Ethernet network cards, there are a variety of devices that use
+this system of addressing.
 
-This module supports both Extended Unique Identifier 48 and 64,
-addresses and implements an OO and a functional interface.
+Both Extended Unique Identifier 48 and 64 addresses are supported.
 
 Some networks that use Extended Unique Identifier 48 (or MAC48) addresses include:
 
