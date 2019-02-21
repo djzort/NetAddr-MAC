@@ -394,6 +394,56 @@ sub new {
 
 }
 
+=head2 random
+
+As an alternative to L</new>, a "random" mac access based upon the provided
+B<oui> argument.
+
+Please consider the following information when selecting an OUI.
+
+If the first octal/digit/number is odd, then the MAC address L</is_multicast>
+
+OUI's used by VM software:
+
+Xen's prefix 00:16:3e
+VMware's prefix 00:50:56
+
+There are 4 sets of 'Locally Administered Address Ranges' that can be used
+without fear of conflict (from actual hardware):
+
+x2-xx-xx-xx-xx-xx
+x6-xx-xx-xx-xx-xx
+xA-xx-xx-xx-xx-xx
+xE-xx-xx-xx-xx-xx
+
+=cut
+
+sub random {
+
+    my ( $p, @q ) = @_;
+    my $c = ref($p) || $p;
+    my $self = bless {}, $c;
+
+    # clear the errstr, see also RT96045
+    $NetAddr::MAC::errstr = undef;
+
+    unless (@q) {
+        my $e = q|Please provide an oui prefix|;
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
+
+    die 'TODO';
+
+    # massage a single argument into a mac argument if needed
+    $self->_init( @q % 2 ? ( oui => shift @q, @q ) : @q )
+      or return;
+
+    return $self
+
+}
+
 =head2 original
 
 Returns the original B<mac> string as used when creating the MAC object
