@@ -90,7 +90,7 @@ cisco errstr oui
 fx hsrp HSRPv2 vrrp autoconf
 pgsql unicast
 eui48 eui64
-4th
+4th vmware xen
 
 =end stopwords
 
@@ -175,11 +175,16 @@ Some networks that use Extended Unique Identifier 64 addresses include:
 
 =head1 OO METHODS
 
-=head2 NetAddr::MAC->new( mac => $mac )
+=head2 new
+
+The B<new> method creates instances of this object. It can be called
+in any of the following ways.
+
+=head3 NetAddr::MAC->new( mac => $mac )
 
 Creates and returns a new NetAddr::MAC object.  The MAC value is required.
 
-=head2 NetAddr::MAC->new( mac => $mac, %options )
+=head3 NetAddr::MAC->new( mac => $mac, %options )
 
 As above, but %options may include any or none of the following
 
@@ -215,11 +220,11 @@ Priority defaults to 0 if not provided.
 
 =back
 
-=head2 NetAddr::MAC->new( $mac )
+=head3 NetAddr::MAC->new( $mac )
 
 Simplified creation method
 
-=head2 NetAddr::MAC->new( $mac, %options )
+=head3 NetAddr::MAC->new( $mac, %options )
 
 As above but with %options
 
@@ -403,7 +408,7 @@ Please consider the following information when selecting an OUI.
 
 If the first octal/digit/number is odd, then the MAC address L</is_multicast>
 
-OUI's used by VM software:
+OUI's used by virtualization software:
 
 Xen's prefix 00:16:3e
 VMware's prefix 00:50:56
@@ -411,10 +416,10 @@ VMware's prefix 00:50:56
 There are 4 sets of 'Locally Administered Address Ranges' that can be used
 without fear of conflict (from actual hardware):
 
-x2-xx-xx-xx-xx-xx
-x6-xx-xx-xx-xx-xx
-xA-xx-xx-xx-xx-xx
-xE-xx-xx-xx-xx-xx
+ x2-xx-xx-xx-xx-xx
+ x6-xx-xx-xx-xx-xx
+ xA-xx-xx-xx-xx-xx
+ xE-xx-xx-xx-xx-xx
 
 =cut
 
