@@ -818,7 +818,7 @@ sub as_microsoft {
 =head2 as_pgsql
 
 Returns the mac address normalized as a hexadecimal string that is 0 padded and has a I<:> in the middle of the hex string.
-this appears in the pgsql documentation along with the single dash version
+this appears in the postgresql documentation along with the single dash version
 
  001122:334455
 
@@ -843,7 +843,7 @@ sub as_pgsql {
 =head2 as_singledash
 
 Returns the mac address normalized as a hexadecimal string that is 0 padded and has a dash in the middle of the hex string.
-this appears in the pgsql documentation.
+this appears in the postgresql documentation. Aruba networks also seem to use this format.
 
  001122-334455
 
