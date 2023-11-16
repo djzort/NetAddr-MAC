@@ -47,6 +47,7 @@ use vars qw( %EXPORT_TAGS );
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
           mac_is_broadcast mac_is_vrrp
+          mac_is_vrrp4     mac_is_vrrp6
           mac_is_hsrp      mac_is_hsrp2
           mac_is_msnlb
           mac_is_local     mac_is_universal
@@ -63,6 +64,7 @@ use vars qw( %EXPORT_TAGS );
           mac_is_eui48     mac_is_eui64
           mac_is_unicast   mac_is_multicast
           mac_is_broadcast mac_is_vrrp
+          mac_is_vrrp4     mac_is_vrrp6
           mac_is_hsrp      mac_is_hsrp2
           mac_is_msnlb
           mac_is_local     mac_is_universal
@@ -560,9 +562,9 @@ sub is_broadcast {
 
 =head2 is_vrrp
 
-Returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address
+Returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address (RFC 5798 s7.4)
 
-i.e. 00-00-5E-00-01-XX
+i.e. 00-00-5E-00-01-XX or 00-00-5E-00-02-XX
 
 always returns false for eui64.
 
@@ -573,6 +575,22 @@ I'm not quite sure what to do with 01-00-5E-00-00-12, suggestions welcomed.
 sub is_vrrp {
     my $self = shift;
 
+    return is_vrrp4( $self ) || is_vrrp6( $self );
+}
+
+=head2 is_vrrp4
+
+Returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address
+
+i.e. 00-00-5E-00-01-XX
+
+always returns false for eui64.
+
+=cut
+
+sub is_vrrp4 {
+    my $self = shift;
+
     return
         is_eui48($self) &&
         $self->{mac}->[0] == 0 &&
@@ -580,6 +598,29 @@ sub is_vrrp {
         $self->{mac}->[2] == hex('0x5e') &&
         $self->{mac}->[3] == 0 &&
         $self->{mac}->[4] == 1;
+
+}
+
+=head2 is_vrrp6
+
+Returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address
+
+i.e. 00-00-5E-00-02-XX
+
+always returns false for eui64.
+
+=cut
+
+sub is_vrrp6 {
+    my $self = shift;
+
+    return
+        is_eui48($self) &&
+        $self->{mac}->[0] == 0 &&
+        $self->{mac}->[1] == 0 &&
+        $self->{mac}->[2] == hex('0x5e') &&
+        $self->{mac}->[3] == 0 &&
+        $self->{mac}->[4] == 2;
 
 }
 
@@ -1074,11 +1115,11 @@ sub mac_is_unicast {
 
 }
 
-=head2 mac_is_vrrp($mac)
+=head2 mac_is_vrrp($mac)-
 
-Returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address
+Returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address (RFC 5798 s7.4)
 
-i.e. 00-00-5E-00-01-XX
+i.e. 00-00-5E-00-01-XX or 00-00-5E-00-02-XX
 
 =cut
 
@@ -1100,6 +1141,57 @@ sub mac_is_vrrp {
 
 }
 
+=head2 mac_is_vrrp4($mac)
+
+Returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address
+
+i.e. 00-00-5E-00-01-XX
+
+=cut
+
+sub mac_is_vrrp4 {
+
+    my $mac = shift;
+    croak 'please use is_vrrp4'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_vrrp4( { mac => $mac } )
+
+}
+
+=head2 mac_is_vrrp6($mac)
+
+Returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address
+
+i.e. 00-00-5E-00-02-XX
+
+=cut
+
+sub mac_is_vrrp6 {
+
+    my $mac = shift;
+    croak 'please use is_vrrp6'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_vrrp6( { mac => $mac } )
+
+}
 
 =head2 mac_is_hsrp($mac)
 
