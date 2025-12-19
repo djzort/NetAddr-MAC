@@ -1115,7 +1115,7 @@ sub mac_is_unicast {
 
 }
 
-=head2 mac_is_vrrp($mac)-
+=head2 mac_is_vrrp($mac)
 
 Returns true if mac address is $mac is determined to be a Virtual Router Redundancy (VRRP) address (RFC 5798 s7.4)
 
