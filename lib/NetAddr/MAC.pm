@@ -8,6 +8,7 @@ package NetAddr::MAC;
 
 
 use Carp qw( croak );
+use Exporter 'import';
 use List::Util qw( first );
 
 use constant EUI48LENGTHHEX => 12;
@@ -38,8 +39,7 @@ use constant ETHER2TOKEN => (
     qw(0f 8f 4f cf 2f af 6f ef 1f 9f 5f df 3f bf 7f ff),    # f
 );
 
-use base qw( Exporter );
-use vars qw( %EXPORT_TAGS );
+our %EXPORT_TAGS;
 
 %EXPORT_TAGS = (
     all => [
