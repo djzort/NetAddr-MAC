@@ -1677,11 +1677,7 @@ feedback so I can improve!
 
 =head1 SUPPORT
 
-Please use the RT system on CPAN to lodge bugs.
-
-Many young people like to use Github, so by all means send me pull requests at
-
-  https://github.com/djzort/NetAddr-MAC
+Just use github: L<https://github.com/djzort/NetAddr-MAC>
 
 =head1 MOTIVATION
 
