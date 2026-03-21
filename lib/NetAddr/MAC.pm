@@ -153,6 +153,8 @@ Some networks that use Extended Unique Identifier 64 addresses include:
  IPv6 (sort of)
  ZigBee / 802.15.4 wireless personal-area networks
 
+This module intentionally omits vendor OUI lookup functionality. If you need to look up the vendor for a MAC address, consider using L<Net::MAC::Vendor>.
+
 =head1 OO METHODS
 
 =head2 new
