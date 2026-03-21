@@ -637,13 +637,14 @@ always returns false for eui64.
 sub is_hsrp2 {
     my $self = shift;
 
-    return
+    return (
         is_eui48($self) &&
         $self->{mac}->[0] == 0 &&
         $self->{mac}->[1] == 0 &&
         $self->{mac}->[2] == hex('0xc') &&
-        $self->{mac}->[3] == hex('0x9f');
-        $self->{mac}->[4] >= 240; # 0xFX
+        $self->{mac}->[3] == hex('0x9f') &&
+        $self->{mac}->[4] >= 240 # 0xFX
+    );
 
 }
 
