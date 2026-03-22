@@ -215,8 +215,6 @@ As above but with %options
 sub new {
 
     my ( $p, @q ) = @_;
-    my $c = ref($p) || $p;
-    my $self = bless {}, $c;
 
     # clear the errstr, see also RT96045
     $NetAddr::MAC::errstr = undef;
@@ -228,6 +226,8 @@ sub new {
         return
     }
 
+    my $c = ref($p) || $p;
+    my $self = bless {}, $c;
     # massage a single argument into a mac argument if needed
     $self->_init( @q % 2 ? ( mac => shift @q, @q ) : @q )
       or return;
@@ -244,14 +244,16 @@ sub new {
 
         my ( $self, %args ) = @_;
 
+        $_die = undef;
+
         if ( defined $args{die_on_error} ) {
-            $self->{_die}++ if $args{die_on_error};
+            $_die = ++$self->{_die}
+                if $args{die_on_error};
         }
         else {
-            $self->{_die}++ if $NetAddr::MAC::die_on_error;
+            $_die = ++$self->{_die}
+                if $NetAddr::MAC::die_on_error;
         }
-
-        $_die++ if $self->{_die};
 
         $self->{original} = $args{mac};
 
@@ -296,11 +298,12 @@ sub new {
         my $mac = shift;
         my $e;
 
-        for (1) {
+        CHECK_BLOCK:
+        {
 
             unless ($mac) {
                 $e = 'Please provide a mac address';
-                last;
+                last CHECK_BLOCK;
             }
 
             # be nice, strip leading and trailing whitespace
@@ -311,20 +314,20 @@ sub new {
               ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
 
             # avoid matching ipv6
-            last if $mac =~ m/[a-f0-9]{1,4}:[a-f0-9]{1,4}::([a-f0-9]{1,4})?/i;
-            last if $mac =~ m/[a-f0-9]{1,4}::[a-f0-9]{1,4}:[a-f0-9]{1,4}/i;
+            last CHECK_BLOCK if $mac =~ m/[a-f0-9]{1,4}:[a-f0-9]{1,4}::([a-f0-9]{1,4})?/i;
+            last CHECK_BLOCK if $mac =~ m/[a-f0-9]{1,4}::[a-f0-9]{1,4}:[a-f0-9]{1,4}/i;
 
             my @parts = grep { length } split( /[^a-z0-9]+/ix, $mac );
 
             # anything other than hex...
-            last if ( first { m{[^a-f0-9]}i } @parts );
+            last CHECK_BLOCK if ( first { m{[^a-f0-9]}i } @parts );
 
             # resolve wierd things like aabb.cc.00.11.22 or 11.22.33.aabbcc
-
             @parts = map {
                 my $o = $_;
-                (length($o) % 2) == 0 ? $o =~ m/(..)/g
-                                      : $o
+                (length($o) % 2) == 0
+                    ? $o =~ m/(..)/g
+                    : $o
                 } @parts;
 
             # 12 characters for EUI48, 16 for EUI64
@@ -351,7 +354,7 @@ sub new {
                 # problems detecting broken formatted macs.
                 # cisco doesnt drop leading zeros so lets go for the least
                 # edgey of the edge cases.
-                last if (first {length $_ < 4} @parts);
+                last CHECK_BLOCK if (first {length $_ < 4} @parts);
 
                 return [
                     map {
@@ -361,9 +364,7 @@ sub new {
                 ];
             }
 
-            last
-
-        } # just so we can jump out
+        }
 
         $e ||= "Invalid MAC format '$mac'";
 
@@ -381,50 +382,99 @@ sub new {
 
 }
 
+sub _oui_to_integers {
+    my ( $oui, $min, $max ) = @_;
+
+    return unless defined $oui;
+
+    # be nice, strip leading and trailing whitespace
+    $oui =~ s/^\s+//;
+    $oui =~ s/\s+$//;
+
+    my @parts = grep { length } split( /[^a-z0-9]+/ix, $oui );
+
+    # anything other than hex...
+    return if ( first { m{[^a-f0-9]}i } @parts );
+
+    @parts = map {
+        my $o = $_;
+        (length($o) % 2) == 0
+            ? $o =~ m/(..)/g
+            : $o
+    } @parts;
+
+    return unless @parts >= $min && @parts <= $max;
+    return [ map { hex($_) } @parts ];
+}
+
 =head2 random
 
-As an alternative to L</new>, a "random" mac access based upon the provided
-B<oui> argument.
+Generates a random MAC address using the provided OUI/prefix.
 
-Please consider the following information when selecting an OUI.
+    my $mac = NetAddr::MAC->random( prefix => '00:16:3e' );
+    my $mac = NetAddr::MAC->random( prefix => '00:16:3e:12', eui64 => 1 );
 
-If the first octal/digit/number is odd, then the MAC address L</is_multicast>
+The prefix can be any string format accepted by the module (e.g., colon, dash, dot, or plain hex).
+You must provide at least 3 octets for EUI-48 (default) or at least 4 for EUI-64 (with C<eui64 =E<gt> 1>).
+You may provide more than the minimum; any missing octets will be filled with random values up to 6 (EUI-48) or 8 (EUI-64) total.
+
+If the first octet is odd, the MAC address will be multicast. For locally administered addresses, use a prefix like x2-xx-xx-xx-xx-xx.
 
 OUI's used by virtualization software:
 
-Xen's prefix 00:16:3e
-VMware's prefix 00:50:56
+    Xen's prefix    00:16:3e
+    VMware's prefix 00:50:56
+    Proxmox VE      BC:24:11
 
-There are 4 sets of 'Locally Administered Address Ranges' that can be used
-without fear of conflict (from actual hardware):
+Locally Administered Address Ranges:
 
- x2-xx-xx-xx-xx-xx
- x6-xx-xx-xx-xx-xx
- xA-xx-xx-xx-xx-xx
- xE-xx-xx-xx-xx-xx
+    x2-xx-xx-xx-xx-xx
+    x6-xx-xx-xx-xx-xx
+    xA-xx-xx-xx-xx-xx
+    xE-xx-xx-xx-xx-xx
 
 =cut
 
 sub random {
 
     my ( $p, @q ) = @_;
-    my $c = ref($p) || $p;
-    my $self = bless {}, $c;
 
     # clear the errstr, see also RT96045
     $NetAddr::MAC::errstr = undef;
 
-    unless (@q) {
+    # Accept options: oui => ..., eui64 => 1/0
+    my %args    = @q % 2 ? ( prefix => shift @q, @q ) : @q;
+    my $oui_str = $args{prefix};
+
+    unless ($oui_str) {
         my $e = q|Please provide an oui prefix|;
-        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        if ($NetAddr::MAC::die_on_error or $args{_die}) {
+            croak "$e\n";
+        }
         $NetAddr::MAC::errstr = $e;
         return
     }
 
-    die 'TODO';
+    my $eui64   = $args{eui64} // 0;
+    my ($min, $max) = $eui64 ? (4, 7) : (3, 5);
+    my $oui_ints = _oui_to_integers($oui_str, $min, $max);
+    unless ($oui_ints) {
+        my $e = "Prefix must be between $min and $max octets for ".($eui64 ? 'EUI-64' : 'EUI-48');
+        if ($NetAddr::MAC::die_on_error or $args{_die}) {
+            croak "$e\n";
+        }
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
 
-    # massage a single argument into a mac argument if needed
-    $self->_init( @q % 2 ? ( oui => shift @q, @q ) : @q )
+    my @mac = (@$oui_ints, map { int(rand(256)) } 1..(1 + $max - scalar(@$oui_ints)));
+
+    # Compose MAC string for object creation
+    my $mac_str = join(':', map { sprintf('%02x', $_) } @mac);
+
+    my $c    = ref($p) || $p;
+    my $self = bless {}, $c;
+    $self->_init( mac => $mac_str )
       or return;
 
     return $self
@@ -519,7 +569,6 @@ Returns true if mac address is determined to be a multicast address
 
 sub is_multicast {
     my $self = shift;
-
     return ($self->{mac}->[0] & 1) && ! is_broadcast($self);
 }
 
@@ -553,7 +602,6 @@ I'm not quite sure what to do with 01-00-5E-00-00-12, suggestions welcomed.
 
 sub is_vrrp {
     my $self = shift;
-
     return is_vrrp4( $self ) || is_vrrp6( $self );
 }
 
