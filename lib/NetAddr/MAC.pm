@@ -153,7 +153,11 @@ Some networks that use Extended Unique Identifier 64 addresses include:
  IPv6 (sort of)
  ZigBee / 802.15.4 wireless personal-area networks
 
-This module intentionally omits vendor OUI lookup functionality. If you need to look up the vendor for a MAC address, consider using L<Net::MAC::Vendor>.
+This module intentionally omits vendor OUI lookup functionality. If you need to look
+up the vendor for a MAC address, consider using L<Net::MAC::Vendor>.
+
+A templating function is also deliberately omitted, as very niche outputs can easily
+be derived from the 'basic' format.
 
 =head1 OO METHODS
 
@@ -1692,7 +1696,7 @@ Or do it globally
 
 =head1 CREDITS
 
-Stolen lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
+Borrowed lots of ideas and some pod content from L<Device::MAC> and L<Net::MAC>
 
 =head1 SEE ALSO
 
@@ -1700,46 +1704,9 @@ In some circumstances, the L<Regexp::Common::net> might be a slimmer solution.
 
 L<Net::MAC::Vendor> is useful for doing vendor look up.
 
-If you find L<Device::MAC> or L<Net::MAC> to be more suitable, please send
-feedback so I can improve!
-
-=head1 TODO
-
- - moare tests!
- - find bugs, squash them
- - merge in your changes!
-
 =head1 SUPPORT
 
 Just use github: L<https://github.com/djzort/NetAddr-MAC>
-
-=head1 MOTIVATION
-
-There are lots of systems at my (then) place of work which handle MAC
-addresses. There was lots of code validating and normalizing them all over
-the place - most of it was quirky and sloppy. So I set about creating a
-reusable module to add to our SOE install so that MAC address handling
-would become consistent, reliable, powerful and trivial.
-
-Generally speaking this module fulfills that goal. It's very convenient
-to be able to use MAC addresses in any format throughout those systems.
-
-There are several other MAC address modules on CPAN. I didn't like the
-interface on one, the other dragged in Moose. So I created this module,
-taking the ideas I liked from the other two modules and adding in extra bits
-that I needed (and a few features just for completeness) whilst avoiding
-dependencies and avoiding anything that doesn't work on perl 5.6
-
-I hope that the result is useful to others, the concept is to be able to create
-an object representing a MAC address based on a string that only very vaguely
-resembles a MAC address. From there, to be able to output normalized string
-representations of the mac address in a variety of common formats.
-
-A templating function is deliberately omitted, as very niche outputs can easily
-be derived from the 'basic' format.
-
-Feel free to send patches for features you add, I appreciate those who
-have done so far and endeavour to incorporate new patches ASAP.
 
 =cut
 
