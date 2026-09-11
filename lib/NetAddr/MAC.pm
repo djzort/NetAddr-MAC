@@ -11,9 +11,7 @@ use Carp qw( croak );
 use Exporter 'import';
 use List::Util qw( first );
 
-use constant EUI48LENGTHHEX => 12;
 use constant EUI48LENGTHDEC => 6;
-use constant EUI64LENGTHHEX => 16;
 use constant EUI64LENGTHDEC => 8;
 use constant MAXPRIORITY    => 65535;    # 16 bit field in the STP bridge id
 
@@ -343,39 +341,17 @@ sub new {
                     : $o
                 } @parts;
 
-            # 12 characters for EUI48, 16 for EUI64
-            if (
-                @parts == 1
-                && (   length $parts[0] == EUI48LENGTHHEX
-                    || length $parts[0] == EUI64LENGTHHEX )
-              )
-            {    # 0019e3010e72
-                local $_ = shift(@parts);
-                while (m{([a-f0-9]{2})}igx) { push( @parts, $1 ) }
-                return [ map { hex($_) } @parts ]
-            }
+            # every part is now one or two hex digits, or it is not an octet.
+            # a longer part must never reach hex(), it would yield a value
+            # above 255 that every as_* method then prints back verbatim
+            last CHECK_BLOCK if grep { length $_ > 2 } @parts;
 
-            # 00:19:e3:01:0e:72
+            # 00:19:e3:01:0e:72, 0019.e301.0e72, 0019e3010e72 and friends all
+            # arrive here as 6 or 8 parts after the split above
             if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
                 return [ map { hex($_) } @parts ]
             }
 
-            # 0019:e301:0e72
-            if ( @parts == EUI48LENGTHDEC / 2 || @parts == EUI64LENGTHDEC / 2 )
-            {
-                # it would be nice to accept no leading 0's but this gives
-                # problems detecting broken formatted macs.
-                # cisco doesnt drop leading zeros so lets go for the least
-                # edgey of the edge cases.
-                last CHECK_BLOCK if (first {length $_ < 4} @parts);
-
-                return [
-                    map {
-                        m{^ ([a-f0-9]{2}) ([a-f0-9]{2}) $}ix
-                          && ( hex($1), hex($2) )
-                    } @parts
-                ];
-            }
 
         }
 
