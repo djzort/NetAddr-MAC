@@ -246,22 +246,15 @@ sub new {
 
 {
 
-    my $_die;
-
     sub _init {
 
         my ( $self, %args ) = @_;
 
-        $_die = undef;
-
-        if ( defined $args{die_on_error} ) {
-            $_die = ++$self->{_die}
-                if $args{die_on_error};
-        }
-        else {
-            $_die = ++$self->{_die}
-                if $NetAddr::MAC::die_on_error;
-        }
+        # the object option wins over the global, and a defined false value
+        # must be able to switch dying off
+        $self->{_die} = defined $args{die_on_error}
+            ? ( $args{die_on_error} ? 1 : 0 )
+            : ( $NetAddr::MAC::die_on_error ? 1 : 0 );
 
         $self->{original} = $args{mac};
 
@@ -270,7 +263,7 @@ sub new {
             $args{mac} = $2;
         }
 
-        $self->{mac} = _mac_to_integers( $args{mac} );
+        $self->{mac} = _mac_to_integers( $args{mac}, $self->{_die} );
 
         unless ( $self->{mac} ) {
             croak $NetAddr::MAC::errstr . "\n" if $self->{_die};
@@ -303,8 +296,11 @@ sub new {
 
     sub _mac_to_integers {
 
-        my $mac = shift;
+        my ( $mac, $die ) = @_;
         my $e;
+
+        # procedural callers pass no flag and get the global behaviour
+        $die = ( $NetAddr::MAC::die_on_error ? 1 : 0 ) unless defined $die;
 
         CHECK_BLOCK:
         {
@@ -376,12 +372,7 @@ sub new {
 
         $e ||= "Invalid MAC format '$mac'";
 
-        if ( defined $_die ) {
-            croak "$e\n" if $_die;
-        }
-        elsif ($NetAddr::MAC::die_on_error) {
-            croak "$e\n";
-        }
+        croak "$e\n" if $die;
 
         $NetAddr::MAC::errstr = $e;
 
