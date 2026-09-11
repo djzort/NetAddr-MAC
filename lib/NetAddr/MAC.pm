@@ -314,7 +314,7 @@ sub new {
         CHECK_BLOCK:
         {
 
-            unless ($mac) {
+            unless ( defined $mac and length $mac ) {
                 $e = 'Please provide a mac address';
                 last CHECK_BLOCK;
             }
@@ -1491,7 +1491,7 @@ B<1,length> leading. I<length> is the number of hex pairs (6 for EUI48)
 sub mac_as_bpr {
 
     my $mac = shift;
-    croak 'please use as_basic'
+    croak 'please use as_bpr'
       if ref $mac eq __PACKAGE__;
     if ( ref $mac ) {
         my $e = 'argument must be a string';
@@ -1502,6 +1502,7 @@ sub mac_as_bpr {
 
     $mac = _mac_to_integers($mac) or return;
     return as_bpr( { mac => $mac } )
+
 
 }
 
