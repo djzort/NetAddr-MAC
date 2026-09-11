@@ -15,6 +15,7 @@ use constant EUI48LENGTHHEX => 12;
 use constant EUI48LENGTHDEC => 6;
 use constant EUI64LENGTHHEX => 16;
 use constant EUI64LENGTHDEC => 8;
+use constant MAXPRIORITY    => 65535;    # 16 bit field in the STP bridge id
 
 our %EXPORT_TAGS;
 
@@ -258,9 +259,17 @@ sub new {
 
         $self->{original} = $args{mac};
 
-        if ($args{mac} =~ m/^(\d+)\#(.+)$/ ) {
+        if ( defined $args{mac} and $args{mac} =~ m/^([0-9]+)\#(.+)$/ ) {
             $self->{priority} = $1;
             $args{mac} = $2;
+        }
+
+        for my $p ( grep { defined } $self->{priority}, $args{priority} ) {
+            next if $p =~ m/^[0-9]+$/ and $p <= MAXPRIORITY;
+            my $e = "Invalid priority '$p', must be an integer from 0 to " . MAXPRIORITY;
+            croak "$e\n" if $self->{_die};
+            $NetAddr::MAC::errstr = $e;
+            return
         }
 
         $self->{mac} = _mac_to_integers( $args{mac}, $self->{_die} );
@@ -271,7 +280,7 @@ sub new {
         }
 
         if (defined $self->{priority}) {
-            if ($args{priority} and $args{priority} != $self->{priority}) {
+            if ( defined $args{priority} and $args{priority} != $self->{priority} ) {
                 my $e = "Conflicting priority in '$self->{original}' and priority argument $args{priority}";
                 croak "$e\n" if $self->{_die};
                 $NetAddr::MAC::errstr = $e;
@@ -279,7 +288,7 @@ sub new {
             }
         }
         else {
-            $self->{priority} = $args{priority} || 0;
+            $self->{priority} = $args{priority} // 0;
         }
 
         # check none of the list elements are empty
