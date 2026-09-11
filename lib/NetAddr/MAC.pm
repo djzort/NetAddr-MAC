@@ -290,7 +290,10 @@ sub new {
         }
 
         # check none of the list elements are empty
-        if (first { not defined $_ or 0 == length $_} @{$self->{mac}}) {
+        # grep, not first: first returns the element, and an empty string
+        # is false, so the check it guarded never fired
+        if ( grep { not defined $_ or 0 == length $_ } @{ $self->{mac} } ) {
+
             my $e = "Invalid MAC format '$self->{original}'";
             croak "$e\n" if $self->{_die};
             $NetAddr::MAC::errstr = $e;
