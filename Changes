@@ -1,5 +1,14 @@
 NetAddr::MAC - A MAC address object
 
+1.02    2026-09-11
+        - Add support for detecting multicast mac addresses GH#3
+        - Correct behaviour of die_on_error GH#13
+        - Validate birdge priority GH#14
+        - Fix defects in new() GH#8
+        - Octects longer than two hex digits no longer accepted. GH#9
+        - Fix Empty-octet guard GH#10
+        - BPR prefix octet count was stripped without being checked GH#11
+
 1.01    2026-06-09
         - Add Test::Exception to build requirements (GH#7)
         - No functional changes at all
