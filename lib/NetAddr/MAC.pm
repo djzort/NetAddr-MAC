@@ -324,8 +324,10 @@ sub new {
             $mac =~ s/^\s+//;
             $mac =~ s/\s+$//;
 
-            $mac =~ s{^1,\d,}{}
-              ; # blindly remove the prefix from bpr, we could check that \d is the actual length, but oh well
+            # bpr prefix is "1,<octet count>," and the count must match the
+            # octets that follow
+            my $bpr_count;
+            $bpr_count = $1 if $mac =~ s{^1,([0-9]+),}{};
 
             # avoid matching ipv6
             last CHECK_BLOCK if $mac =~ m/[a-f0-9]{1,4}:[a-f0-9]{1,4}::([a-f0-9]{1,4})?/i;
@@ -351,9 +353,12 @@ sub new {
 
             # 00:19:e3:01:0e:72, 0019.e301.0e72, 0019e3010e72 and friends all
             # arrive here as 6 or 8 parts after the split above
+            last CHECK_BLOCK if defined $bpr_count and $bpr_count != @parts;
+
             if ( @parts == EUI48LENGTHDEC || @parts == EUI64LENGTHDEC ) {
                 return [ map { hex($_) } @parts ]
             }
+
 
 
         }
