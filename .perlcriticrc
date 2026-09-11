@@ -6,19 +6,33 @@ theme = core
 verbose = 6
 
 # Disable overly restrictive or opinionated policies
-[-CodeLayout::RequireTidyCode]          # Allow flexibility in code formatting
-[-Documentation::RequirePodSections]    # Dist::Zilla often handles POD
-[-Subroutines::ProhibitSubroutinePrototypes]  # Prototypes are sometimes useful
-[-Variables::ProhibitPunctuationVars]   # Allow common Perl variables like $_
+# Allow flexibility in code formatting
+[-CodeLayout::RequireTidyCode]
+# Dist::Zilla often handles POD
+[-Documentation::RequirePodSections]
+# Prototypes are sometimes useful
+[-Subroutines::ProhibitSubroutinePrototypes]
+# Allow common Perl variables like $_
+[-Variables::ProhibitPunctuationVars]
 
 # Enable policies for maintainability and clarity
-[CodeLayout::ProhibitHardTabs]          # Use spaces for indentation
-[CodeLayout::RequireConsistentNewlines] # Enforce consistent line endings
-[TestingAndDebugging::RequireUseStrict] # Require 'use strict'
-[TestingAndDebugging::RequireUseWarnings] # Require 'use warnings'
-[Variables::ProhibitUnusedVariables]    # Catch unused variables
-[Subroutines::ProhibitExplicitReturnUndef] # Avoid explicit 'return undef'
-[InputOutput::RequireBracedFileHandleWithPrint] # Safer print/printf usage
-[Modules::RequireVersionVar]            # Ensure module version is defined
-[ControlStructures::ProhibitPostfixControls] # Avoid postfix if/unless/while
-[RegularExpressions::ProhibitComplexRegexes] # Keep regexes manageable
+# Use spaces for indentation
+[CodeLayout::ProhibitHardTabs]
+# Enforce consistent line endings
+[CodeLayout::RequireConsistentNewlines]
+# Require 'use strict'
+[TestingAndDebugging::RequireUseStrict]
+# Require 'use warnings'
+[TestingAndDebugging::RequireUseWarnings]
+# Catch unused variables
+[Variables::ProhibitUnusedVariables]
+# Avoid explicit 'return undef'
+[Subroutines::ProhibitExplicitReturnUndef]
+# Safer print/printf usage
+[InputOutput::RequireBracedFileHandleWithPrint]
+# Ensure module version is defined
+[Modules::RequireVersionVar]
+# Avoid postfix if/unless/while
+[ControlStructures::ProhibitPostfixControls]
+# Keep regexes manageable
+[RegularExpressions::ProhibitComplexRegexes]
