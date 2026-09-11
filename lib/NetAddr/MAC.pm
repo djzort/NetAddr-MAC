@@ -27,6 +27,8 @@ our %EXPORT_TAGS;
           mac_is_vrrp4     mac_is_vrrp6
           mac_is_hsrp      mac_is_hsrp2
           mac_is_msnlb
+          mac_is_ipv4_multicast
+          mac_is_ipv6_multicast
           mac_is_local     mac_is_universal
           mac_as_basic     mac_as_sun
           mac_as_microsoft mac_as_cisco
@@ -44,6 +46,8 @@ our %EXPORT_TAGS;
           mac_is_vrrp4     mac_is_vrrp6
           mac_is_hsrp      mac_is_hsrp2
           mac_is_msnlb
+          mac_is_ipv4_multicast
+          mac_is_ipv6_multicast
           mac_is_local     mac_is_universal
           )
     ],
@@ -592,6 +596,48 @@ sub is_broadcast {
     return 1
 }
 
+=head2 is_ipv4_multicast
+
+Returns true if mac address is determined to be an IPv4 multicast address (RFC 1112 s6.4)
+
+i.e. 01-00-5E-00-00-00 through 01-00-5E-7F-FF-FF, the low 23 bits carry the group address
+
+always returns false for eui64.
+
+=cut
+
+sub is_ipv4_multicast {
+    my $self = shift;
+
+    return
+      is_eui48($self) &&
+      $self->{mac}->[0] == 1 &&
+      $self->{mac}->[1] == 0 &&
+      $self->{mac}->[2] == hex('0x5e') &&
+      !( $self->{mac}->[3] & hex('0x80') );
+
+}
+
+=head2 is_ipv6_multicast
+
+Returns true if mac address is determined to be an IPv6 multicast address (RFC 2464 s7)
+
+i.e. 33-33-XX-XX-XX-XX, the low 32 bits carry the low 32 bits of the group address
+
+always returns false for eui64.
+
+=cut
+
+sub is_ipv6_multicast {
+    my $self = shift;
+
+    return
+      is_eui48($self) &&
+      $self->{mac}->[0] == hex('0x33') &&
+      $self->{mac}->[1] == hex('0x33');
+
+}
+
 =head2 is_vrrp
 
 Returns true if mac address is determined to be a Virtual Router Redundancy (VRRP) address (RFC 5798 s7.4)
@@ -600,7 +646,8 @@ i.e. 00-00-5E-00-01-XX or 00-00-5E-00-02-XX
 
 always returns false for eui64.
 
-I'm not quite sure what to do with 01-00-5E-00-00-12, suggestions welcomed.
+Note that 01-00-5E-00-00-12 is the IPv4 multicast address for the VRRP group 224.0.0.18,
+see B<is_ipv4_multicast>, and is not a virtual router address.
 
 =cut
 
@@ -1150,6 +1197,56 @@ sub mac_is_unicast {
 
     $mac = _mac_to_integers($mac) or return;
     return is_unicast( { mac => $mac } )
+
+}
+
+=head2 mac_is_ipv4_multicast($mac)
+
+Returns true if mac address in $mac is determined to be an IPv4 multicast address
+
+i.e. 01-00-5E-00-00-00 through 01-00-5E-7F-FF-FF
+
+=cut
+
+sub mac_is_ipv4_multicast {
+
+    my $mac = shift;
+    croak 'please use is_ipv4_multicast'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_ipv4_multicast( { mac => $mac } )
+
+}
+
+=head2 mac_is_ipv6_multicast($mac)
+
+Returns true if mac address in $mac is determined to be an IPv6 multicast address
+
+i.e. 33-33-XX-XX-XX-XX
+
+=cut
+
+sub mac_is_ipv6_multicast {
+
+    my $mac = shift;
+    croak 'please use is_ipv6_multicast'
+      if ref $mac eq __PACKAGE__;
+    if ( ref $mac ) {
+        my $e = 'argument must be a string';
+        croak "$e\n" if $NetAddr::MAC::die_on_error;
+        $NetAddr::MAC::errstr = $e;
+        return
+    }
+
+    $mac = _mac_to_integers($mac) or return;
+    return is_ipv6_multicast( { mac => $mac } )
 
 }
 
