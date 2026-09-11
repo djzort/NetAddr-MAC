@@ -324,6 +324,10 @@ sub new {
             $mac =~ s/^\s+//;
             $mac =~ s/\s+$//;
 
+            # bridge id form "<priority>#<mac>". _init has already taken the
+            # priority for objects, the procedural functions just discard it
+            $mac =~ s{^[0-9]+\#}{};
+
             # bpr prefix is "1,<octet count>," and the count must match the
             # octets that follow
             my $bpr_count;
