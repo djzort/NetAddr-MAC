@@ -1058,7 +1058,6 @@ sub to_eui64 {
         ];
 
     }
-    else { return }
 
     return 1
 }
