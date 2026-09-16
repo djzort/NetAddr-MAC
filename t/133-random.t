@@ -77,7 +77,7 @@ for my $case (@cases) {
     if ($case->{expect_defined}) {
 
         ok(defined $mac, "$case->{desc} (object defined)")
-            or diag( 'Error: ' . eval { '$NetAddr::MAC::errstr' } );
+            or diag( 'Error: ' . ( NetAddr::MAC->errstr // 'undef' ) );
         if (defined $mac && $case->{match}) {
             my $mac_str = $mac->as_ieee;
             my %args = (@{$case->{args}} % 2 == 0)

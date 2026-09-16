@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 311;
+use Test::More tests => 307;
 use Test::Trap;
 
 BEGIN {
@@ -172,7 +172,7 @@ BEGIN {
         ok( !mac_is_msnlb($mac), 'eui64 is never msnlb from ' . $mac);
     }
 
-    for my $mac ( @unicasteui48macs, @unicasteui48macs ) {
+    for my $mac ( @unicasteui48macs, @multicasteui48macs ) {
         ok( !mac_is_vrrp($mac),  'vrrp  = false from ' . $mac);
         ok( !mac_is_hsrp($mac),  'hsrp  = false from ' . $mac);
         ok( !mac_is_hsrp2($mac), 'hsrp2  = false from ' . $mac);
