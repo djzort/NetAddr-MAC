@@ -94,5 +94,16 @@ for my $case (@cases) {
     }
 }
 
+# Test die_on_error option and global setting
+dies_ok { NetAddr::MAC->random(prefix => '00:16', die_on_error => 1) } 'random() croaks on invalid prefix with die_on_error => 1';
+dies_ok { NetAddr::MAC->random(die_on_error => 1) } 'random() croaks on missing prefix with die_on_error => 1';
+
+{
+    no warnings 'once';
+    local $NetAddr::MAC::die_on_error = 1;
+    dies_ok { NetAddr::MAC->random(prefix => '00:16') } 'random() croaks on invalid prefix with global die_on_error';
+    dies_ok { NetAddr::MAC->random() } 'random() croaks on missing prefix with global die_on_error';
+}
+
 done_testing();
 exit;
